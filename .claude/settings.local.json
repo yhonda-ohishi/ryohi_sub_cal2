@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PYTHONIOENCODING=utf-8 py -m uv tool run --from git+https://github.com/github/spec-kit.git specify init . --no-banner)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
