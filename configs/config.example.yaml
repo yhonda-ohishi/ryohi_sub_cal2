@@ -1,0 +1,117 @@
+version: "1.0"
+
+# Router configuration
+router:
+  port: 8080
+  read_timeout: 30s
+  write_timeout: 30s
+  idle_timeout: 120s
+  max_header_bytes: 1048576
+
+# Admin API configuration
+admin:
+  enabled: true
+  api_key: "change-me-in-production"
+  port: 8081
+
+# Logging configuration
+logging:
+  level: info  # debug, info, warn, error
+  format: json # json, text
+  output: stdout # stdout, file
+  file_path: logs/router.log
+
+# Metrics configuration
+metrics:
+  enabled: true
+  path: /metrics
+  port: 9090
+
+# Backend services
+backends:
+  - id: example-backend
+    name: "Example Backend Service"
+    endpoints:
+      - url: "http://localhost:3000"
+        weight: 50
+      - url: "http://localhost:3001"
+        weight: 50
+    load_balancer:
+      algorithm: weighted # round-robin, weighted, least-conn, ip-hash
+      sticky_session: false
+    health_check:
+      enabled: true
+      path: /health
+      interval: 30s
+      timeout: 5s
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+      expected_status: [200, 204]
+    circuit_breaker:
+      enabled: true
+      max_requests: 3
+      interval: 60s
+      timeout: 30s
+      failure_ratio: 0.6
+      minimum_requests: 3
+    retry_policy:
+      enabled: true
+      max_attempts: 3
+      backoff: exponential # constant, exponential
+      initial_interval: 100ms
+      max_interval: 10s
+
+# Routes configuration
+routes:
+  - id: api-route-v1
+    path: "/api/v1/*"
+    method: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    backend: example-backend
+    timeout: 30s
+    priority: 100
+    enabled: true
+    rate_limit:
+      enabled: true
+      rate: 100
+      period: minute # second, minute, hour
+      burst_size: 10
+      key_type: IP # IP, API_KEY, USER_ID
+    auth:
+      enabled: false
+      type: bearer # none, basic, bearer, api-key
+      required: true
+    middleware:
+      - logging
+      - metrics
+      - cors
+
+# Middleware configuration
+middleware:
+  logging:
+    enabled: true
+    skip_paths: ["/health", "/metrics"]
+    log_body: false
+    log_headers: true
+  
+  cors:
+    enabled: true
+    allowed_origins: ["*"]
+    allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allowed_headers: ["*"]
+    exposed_headers: ["X-Request-Id"]
+    allow_credentials: true
+    max_age: 86400
+  
+  compression:
+    enabled: true
+    level: 5 # 1-9
+    min_size: 1024 # bytes
+  
+  security:
+    enabled: true
+    frame_deny: true
+    content_type_nosniff: true
+    browser_xss_filter: true
+    content_security_policy: "default-src 'self'"
+    hsts_max_age: 31536000
+    hsts_include_subdomains: true

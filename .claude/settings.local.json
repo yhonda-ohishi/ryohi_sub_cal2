@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(PYTHONIOENCODING=utf-8 py -m uv tool run --from git+https://github.com/github/spec-kit.git specify init . --no-banner)"
+      "Bash(PYTHONIOENCODING=utf-8 py -m uv tool run --from git+https://github.com/github/spec-kit.git specify init . --no-banner)",
+      "Read(//c/go/ryohi_sub_cal/**)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(scripts/update-agent-context.sh:*)",
+      "Bash(go mod:*)",
+      "Bash(go test:*)",
+      "Bash(go get:*)",
+      "Bash(cat:*)",
+      "Bash(go run:*)",
+      "Bash(sed:*)",
+      "Bash(go build:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

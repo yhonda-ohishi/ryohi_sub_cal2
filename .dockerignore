@@ -1,0 +1,53 @@
+# Git
+.git/
+.gitignore
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with go test -c
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Binary output
+bin/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Documentation
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Development
+Makefile
+*.bak
+test_config.go

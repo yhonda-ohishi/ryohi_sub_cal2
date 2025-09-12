@@ -1,0 +1,592 @@
+openapi: 3.0.3
+info:
+  title: Router Module API
+  description: APIゲートウェイルーターの管理API
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api@example.com
+
+servers:
+  - url: http://localhost:8080
+    description: ローカル開発サーバー
+  - url: https://router.example.com
+    description: 本番サーバー
+
+paths:
+  /health:
+    get:
+      summary: ヘルスチェック
+      description: ルーターサービスの健全性を確認
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: サービスは健全
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: サービス利用不可
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /metrics:
+    get:
+      summary: メトリクス取得
+      description: Prometheus形式のメトリクスを取得
+      operationId: getMetrics
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: メトリクス
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  # HELP http_requests_total Total HTTP requests
+                  # TYPE http_requests_total counter
+                  http_requests_total{method="GET",status="200"} 1234
+
+  /admin/routes:
+    get:
+      summary: ルート一覧取得
+      description: 設定されているすべてのルートを取得
+      operationId: getRoutes
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: ルート一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: ルート追加
+      description: 新しいルートを追加
+      operationId: addRoute
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteConfig'
+      responses:
+        '201':
+          description: ルート作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteConfig'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/routes/{routeId}:
+    parameters:
+      - name: routeId
+        in: path
+        required: true
+        description: ルートID
+        schema:
+          type: string
+
+    get:
+      summary: ルート詳細取得
+      description: 特定のルートの詳細を取得
+      operationId: getRoute
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: ルート詳細
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: ルート更新
+      description: ルート設定を更新
+      operationId: updateRoute
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteConfig'
+      responses:
+        '200':
+          description: ルート更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteConfig'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: ルート削除
+      description: ルートを削除
+      operationId: deleteRoute
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '204':
+          description: ルート削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/backends:
+    get:
+      summary: バックエンド一覧取得
+      description: すべてのバックエンドサービスを取得
+      operationId: getBackends
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: バックエンド一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BackendService'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: バックエンド追加
+      description: 新しいバックエンドサービスを追加
+      operationId: addBackend
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackendService'
+      responses:
+        '201':
+          description: バックエンド作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendService'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/backends/{backendId}/health:
+    parameters:
+      - name: backendId
+        in: path
+        required: true
+        description: バックエンドID
+        schema:
+          type: string
+
+    get:
+      summary: バックエンドヘルス状態取得
+      description: 特定のバックエンドのヘルス状態を取得
+      operationId: getBackendHealth
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: ヘルス状態
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackendHealth'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/reload:
+    post:
+      summary: 設定リロード
+      description: 設定ファイルを再読み込み
+      operationId: reloadConfig
+      tags:
+        - Admin
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: リロード成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Configuration reloaded successfully
+                  timestamp:
+                    type: string
+                    format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [healthy, unhealthy]
+              message:
+                type: string
+
+    RouteConfig:
+      type: object
+      required:
+        - id
+        - path
+        - method
+        - backend
+      properties:
+        id:
+          type: string
+          example: api-route-1
+        path:
+          type: string
+          example: /api/users/*
+        method:
+          type: array
+          items:
+            type: string
+            enum: [GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS]
+        backend:
+          type: string
+          example: api-service
+        timeout:
+          type: string
+          example: 30s
+        rate_limit:
+          $ref: '#/components/schemas/RateLimitConfig'
+        auth:
+          $ref: '#/components/schemas/AuthConfig'
+        middleware:
+          type: array
+          items:
+            type: string
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        enabled:
+          type: boolean
+          default: true
+
+    BackendService:
+      type: object
+      required:
+        - id
+        - name
+        - endpoints
+      properties:
+        id:
+          type: string
+          example: api-service
+        name:
+          type: string
+          example: API Service
+        endpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/EndpointConfig'
+        load_balancer:
+          $ref: '#/components/schemas/LoadBalancerConfig'
+        health_check:
+          $ref: '#/components/schemas/HealthCheckConfig'
+        circuit_breaker:
+          $ref: '#/components/schemas/CircuitBreakerConfig'
+        enabled:
+          type: boolean
+          default: true
+
+    EndpointConfig:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: http://api-1:8081
+        weight:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 1
+        healthy:
+          type: boolean
+          default: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    LoadBalancerConfig:
+      type: object
+      properties:
+        algorithm:
+          type: string
+          enum: [round-robin, weighted, least-conn, ip-hash]
+          default: round-robin
+        sticky_session:
+          type: boolean
+          default: false
+
+    HealthCheckConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: true
+        path:
+          type: string
+          default: /health
+        interval:
+          type: string
+          example: 30s
+        timeout:
+          type: string
+          example: 5s
+        healthy_threshold:
+          type: integer
+          minimum: 1
+          default: 2
+        unhealthy_threshold:
+          type: integer
+          minimum: 1
+          default: 3
+        expected_status:
+          type: array
+          items:
+            type: integer
+          default: [200]
+
+    CircuitBreakerConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: true
+        max_requests:
+          type: integer
+          minimum: 1
+          default: 3
+        interval:
+          type: string
+          example: 60s
+        timeout:
+          type: string
+          example: 30s
+        failure_ratio:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.6
+        minimum_requests:
+          type: integer
+          minimum: 1
+          default: 3
+
+    RateLimitConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        rate:
+          type: integer
+          minimum: 1
+        period:
+          type: string
+          enum: [second, minute, hour]
+        burst_size:
+          type: integer
+          minimum: 1
+        key_type:
+          type: string
+          enum: [IP, API_KEY, USER_ID]
+        white_list:
+          type: array
+          items:
+            type: string
+
+    AuthConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        type:
+          type: string
+          enum: [none, basic, bearer, api-key]
+        required:
+          type: boolean
+          default: true
+        roles:
+          type: array
+          items:
+            type: string
+
+    BackendHealth:
+      type: object
+      properties:
+        backend_id:
+          type: string
+        status:
+          type: string
+          enum: [healthy, unhealthy, unknown]
+        endpoints:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              status:
+                type: string
+                enum: [healthy, unhealthy, unknown]
+              last_check:
+                type: string
+                format: date-time
+              response_time:
+                type: number
+                description: Response time in milliseconds
+        circuit_breaker:
+          type: object
+          properties:
+            state:
+              type: string
+              enum: [closed, open, half-open]
+            failures:
+              type: integer
+            last_failure:
+              type: string
+              format: date-time
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: リソースが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Health
+    description: ヘルスチェック関連のエンドポイント
+  - name: Metrics
+    description: メトリクス関連のエンドポイント
+  - name: Admin
+    description: 管理者用エンドポイント
