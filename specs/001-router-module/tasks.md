@@ -223,3 +223,20 @@ Task: "認証ミドルウェアの実装 (src/lib/middleware/auth.go)"
 **タスク総数**: 74
 **並列実行可能**: 43タスク ([P]マーク付き)
 **推定完了時間**: 5-7日（2名の開発者で並列作業時）
+## フェーズ 5: dtako_mod統合 (T075-T100)
+**詳細**: [tasks-dtako-integration.md](tasks-dtako-integration.md)を参照
+
+### 概要
+- T075-T077: dtako_mod分析とマッピング
+- T078-T082: 統合テスト作成 (TDD)
+- T083-T092: dtako_mod実装統合
+- T093-T095: 統合テストと検証
+- T096-T100: ドキュメントと最終検証
+
+**新規タスク数**: 26タスク
+**並列実行可能**: 15タスク
+**推定時間**: 2-3日（並列実行時）
+
+---
+*dtako_mod integration tasks added - 2025-09-12*
+*Total Tasks: 100 (T001-T074 + T075-T100)*

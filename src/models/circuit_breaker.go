@@ -10,8 +10,8 @@ import (
 type CircuitBreakerConfig struct {
 	Enabled         bool          `json:"enabled" yaml:"enabled"`
 	MaxRequests     uint32        `json:"max_requests" yaml:"max_requests"`
-	Interval        time.Duration `json:"interval" yaml:"interval"`
-	Timeout         time.Duration `json:"timeout" yaml:"timeout"`
+	Interval        time.Duration `json:"interval" yaml:"interval" swaggertype:"integer"`
+	Timeout         time.Duration `json:"timeout" yaml:"timeout" swaggertype:"integer"`
 	FailureRatio    float64       `json:"failure_ratio" yaml:"failure_ratio"`
 	MinimumRequests uint32        `json:"minimum_requests" yaml:"minimum_requests"`
 }

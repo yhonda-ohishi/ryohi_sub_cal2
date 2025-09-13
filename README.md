@@ -13,6 +13,7 @@
 - 🔧 **設定の自動リロード** - fsnotifyによる設定変更の自動検出
 - 🏥 **ヘルスチェック** - バックエンドの定期的な健康診断
 - 🛡️ **ミドルウェア** - CORS、圧縮、セキュリティヘッダー
+- 📦 **dtako_mod統合** - 本番データインポート機能
 
 ## クイックスタート
 
@@ -167,3 +168,60 @@ MIT
 ## 貢献
 
 プルリクエストを歓迎します。大きな変更の場合は、まずissueを開いて変更内容を議論してください。
+## dtako_mod Integration
+
+### 概要
+
+dtako_modモジュールは、本番環境から以下のデータをインポートする機能を提供します：
+
+- **dtako_rows**: 車両運行データの管理
+- **dtako_events**: イベントデータの管理
+- **dtako_ferry**: フェリー運航データの管理
+
+### API エンドポイント
+
+#### dtako_rows
+- `GET /dtako/rows` - データ一覧取得
+- `GET /dtako/rows/{id}` - 個別データ取得
+- `POST /dtako/rows/import` - データインポート
+
+#### dtako_events
+- `GET /dtako/events` - イベント一覧取得
+- `GET /dtako/events/{id}` - 個別イベント取得
+- `POST /dtako/events/import` - イベントインポート
+
+#### dtako_ferry
+- `GET /dtako/ferry` - フェリーデータ一覧取得
+- `GET /dtako/ferry/{id}` - 個別フェリーデータ取得
+- `POST /dtako/ferry/import` - フェリーデータインポート
+
+### 設定
+
+`configs/config.yaml`に以下を追加:
+
+```yaml
+dtako:
+  enabled: true
+  database:
+    host: localhost
+    port: 5432
+    name: dtako_db
+    user: dtako_user
+  import:
+    batch_size: 1000
+    timeout: 30s
+```
+
+### 使用例
+
+データインポート:
+
+```bash
+curl -X POST http://localhost:8080/dtako/rows/import \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from_date": "2025-01-01",
+    "to_date": "2025-01-31"
+  }'
+```

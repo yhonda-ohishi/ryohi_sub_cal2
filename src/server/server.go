@@ -9,23 +9,26 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/your-org/ryohi-router/src/api"
 	"github.com/your-org/ryohi-router/src/lib/config"
 	"github.com/your-org/ryohi-router/src/lib/middleware"
+	"github.com/your-org/ryohi-router/src/services/dtako"
 	"github.com/your-org/ryohi-router/src/services/health"
 	"github.com/your-org/ryohi-router/src/services/router"
 )
 
 // Server represents the main router server
 type Server struct {
-	config       *config.Config
-	logger       *slog.Logger
-	mainServer   *http.Server
-	adminServer  *http.Server
+	config        *config.Config
+	logger        *slog.Logger
+	mainServer    *http.Server
+	adminServer   *http.Server
 	metricsServer *http.Server
-	router       *router.Router
+	router        *router.Router
 	healthChecker *health.Checker
-	wg           sync.WaitGroup
+	dtakoService  *dtako.DtakoService
+	wg            sync.WaitGroup
 }
 
 // New creates a new server instance
@@ -44,6 +47,9 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 
 	// Initialize health checker
 	s.healthChecker = health.NewChecker(cfg, logger)
+	
+	// Initialize DTako service (enabled by default)
+	s.dtakoService = dtako.NewDtakoService(true)
 
 	// Setup main server
 	mainRouter := s.setupMainRouter()
@@ -93,6 +99,12 @@ func (s *Server) setupMainRouter() http.Handler {
 
 	// Health endpoint (no auth required)
 	r.HandleFunc("/health", api.HealthHandler(s.healthChecker)).Methods("GET")
+	
+	// Swagger documentation endpoint
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
+	
+	// Register DTako routes
+	s.dtakoService.RegisterRoutes(r)
 
 	// Setup route handlers
 	for _, route := range s.config.Routes {

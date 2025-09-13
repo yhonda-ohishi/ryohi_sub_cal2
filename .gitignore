@@ -60,5 +60,5 @@ temp/
 *.tmp
 
 # Build artifacts
-router
-ryohi-router
+/router
+/ryohi-router

@@ -1,0 +1,731 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "高性能なリクエストルーティングシステム",
+        "title": "Ryohi Router API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/admin/backends": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of all configured backend services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "List all backends",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BackendService"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a new backend service configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a new backend",
+                "parameters": [
+                    {
+                        "description": "Backend configuration",
+                        "name": "backend",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.BackendService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.BackendService"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/backends/{id}/health": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get health status of a specific backend service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get backend health status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Backend ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ServiceHealthStatus"
+                        }
+                    },
+                    "404": {
+                        "description": "Backend not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/reload": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Reload the router configuration from file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Reload configuration",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to reload configuration",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/routes": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of all configured routes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "List all routes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.RouteConfig"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a new route configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a new route",
+                "parameters": [
+                    {
+                        "description": "Route configuration",
+                        "name": "route",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RouteConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.RouteConfig"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/routes/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get details of a specific route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get a route by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.RouteConfig"
+                        }
+                    },
+                    "404": {
+                        "description": "Route not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing route configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Update a route",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated route configuration",
+                        "name": "route",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RouteConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.RouteConfig"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Route not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Remove a route configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Delete a route",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Route not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the service and its backends",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health check endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HealthResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/models.HealthResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.AuthConfig": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BackendService": {
+            "type": "object",
+            "properties": {
+                "circuit_breaker": {
+                    "$ref": "#/definitions/models.CircuitBreakerConfig"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EndpointConfig"
+                    }
+                },
+                "health_check": {
+                    "$ref": "#/definitions/models.HealthCheckConfig"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "load_balancer": {
+                    "$ref": "#/definitions/models.LoadBalancerConfig"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "retry_policy": {
+                    "$ref": "#/definitions/models.RetryPolicyConfig"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CircuitBreakerConfig": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "failure_ratio": {
+                    "type": "number"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "max_requests": {
+                    "type": "integer"
+                },
+                "minimum_requests": {
+                    "type": "integer"
+                },
+                "timeout": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.EndpointConfig": {
+            "type": "object",
+            "properties": {
+                "healthy": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.EndpointHealthStatus": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "response_time_ms": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.HealthCheckConfig": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "expected_status": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "healthy_threshold": {
+                    "type": "integer"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "unhealthy_threshold": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "services": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/models.ServiceHealthInfo"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoadBalancerConfig": {
+            "type": "object",
+            "properties": {
+                "algorithm": {
+                    "type": "string"
+                },
+                "sticky_session": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.RateLimitConfig": {
+            "type": "object",
+            "properties": {
+                "burst_size": {
+                    "type": "integer"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "key_type": {
+                    "type": "string"
+                },
+                "period": {
+                    "type": "string"
+                },
+                "rate": {
+                    "type": "integer"
+                },
+                "white_list": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.RetryPolicyConfig": {
+            "type": "object",
+            "properties": {
+                "backoff": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "initial_interval": {
+                    "type": "integer"
+                },
+                "max_attempts": {
+                    "type": "integer"
+                },
+                "max_interval": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.RouteConfig": {
+            "type": "object",
+            "properties": {
+                "auth": {
+                    "$ref": "#/definitions/models.AuthConfig"
+                },
+                "backend": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "middleware": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "path": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "rate_limit": {
+                    "$ref": "#/definitions/models.RateLimitConfig"
+                },
+                "timeout": {
+                    "type": "integer",
+                    "example": 30000000000
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ServiceHealthInfo": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ServiceHealthStatus": {
+            "type": "object",
+            "properties": {
+                "endpoint_statuses": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/models.EndpointHealthStatus"
+                    }
+                },
+                "last_checked": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "service_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

@@ -1,0 +1,470 @@
+basePath: /
+definitions:
+  models.AuthConfig:
+    properties:
+      enabled:
+        type: boolean
+      required:
+        type: boolean
+      roles:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+  models.BackendService:
+    properties:
+      circuit_breaker:
+        $ref: '#/definitions/models.CircuitBreakerConfig'
+      created_at:
+        type: string
+      enabled:
+        type: boolean
+      endpoints:
+        items:
+          $ref: '#/definitions/models.EndpointConfig'
+        type: array
+      health_check:
+        $ref: '#/definitions/models.HealthCheckConfig'
+      id:
+        type: string
+      load_balancer:
+        $ref: '#/definitions/models.LoadBalancerConfig'
+      name:
+        type: string
+      retry_policy:
+        $ref: '#/definitions/models.RetryPolicyConfig'
+      updated_at:
+        type: string
+    type: object
+  models.CircuitBreakerConfig:
+    properties:
+      enabled:
+        type: boolean
+      failure_ratio:
+        type: number
+      interval:
+        type: integer
+      max_requests:
+        type: integer
+      minimum_requests:
+        type: integer
+      timeout:
+        type: integer
+    type: object
+  models.EndpointConfig:
+    properties:
+      healthy:
+        type: boolean
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
+  models.EndpointHealthStatus:
+    properties:
+      message:
+        type: string
+      response_time_ms:
+        type: integer
+      status:
+        type: string
+      url:
+        type: string
+    type: object
+  models.HealthCheckConfig:
+    properties:
+      enabled:
+        type: boolean
+      expected_status:
+        items:
+          type: integer
+        type: array
+      healthy_threshold:
+        type: integer
+      interval:
+        type: integer
+      path:
+        type: string
+      timeout:
+        type: integer
+      unhealthy_threshold:
+        type: integer
+    type: object
+  models.HealthResponse:
+    properties:
+      services:
+        additionalProperties:
+          $ref: '#/definitions/models.ServiceHealthInfo'
+        type: object
+      status:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  models.LoadBalancerConfig:
+    properties:
+      algorithm:
+        type: string
+      sticky_session:
+        type: boolean
+    type: object
+  models.RateLimitConfig:
+    properties:
+      burst_size:
+        type: integer
+      enabled:
+        type: boolean
+      key_type:
+        type: string
+      period:
+        type: string
+      rate:
+        type: integer
+      white_list:
+        items:
+          type: string
+        type: array
+    type: object
+  models.RetryPolicyConfig:
+    properties:
+      backoff:
+        type: string
+      enabled:
+        type: boolean
+      initial_interval:
+        type: integer
+      max_attempts:
+        type: integer
+      max_interval:
+        type: integer
+    type: object
+  models.RouteConfig:
+    properties:
+      auth:
+        $ref: '#/definitions/models.AuthConfig'
+      backend:
+        type: string
+      created_at:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: string
+      method:
+        items:
+          type: string
+        type: array
+      middleware:
+        items:
+          type: string
+        type: array
+      path:
+        type: string
+      priority:
+        type: integer
+      rate_limit:
+        $ref: '#/definitions/models.RateLimitConfig'
+      timeout:
+        example: 30000000000
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.ServiceHealthInfo:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  models.ServiceHealthStatus:
+    properties:
+      endpoint_statuses:
+        additionalProperties:
+          $ref: '#/definitions/models.EndpointHealthStatus'
+        type: object
+      last_checked:
+        type: string
+      message:
+        type: string
+      service_id:
+        type: string
+      status:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 高性能なリクエストルーティングシステム
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Ryohi Router API
+  version: 1.0.0
+paths:
+  /admin/backends:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all configured backend services
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BackendService'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List all backends
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Add a new backend service configuration
+      parameters:
+      - description: Backend configuration
+        in: body
+        name: backend
+        required: true
+        schema:
+          $ref: '#/definitions/models.BackendService'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.BackendService'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new backend
+      tags:
+      - admin
+  /admin/backends/{id}/health:
+    get:
+      consumes:
+      - application/json
+      description: Get health status of a specific backend service
+      parameters:
+      - description: Backend ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ServiceHealthStatus'
+        "404":
+          description: Backend not found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get backend health status
+      tags:
+      - admin
+  /admin/reload:
+    post:
+      consumes:
+      - application/json
+      description: Reload the router configuration from file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to reload configuration
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Reload configuration
+      tags:
+      - admin
+  /admin/routes:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all configured routes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RouteConfig'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List all routes
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Add a new route configuration
+      parameters:
+      - description: Route configuration
+        in: body
+        name: route
+        required: true
+        schema:
+          $ref: '#/definitions/models.RouteConfig'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.RouteConfig'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new route
+      tags:
+      - admin
+  /admin/routes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a route configuration
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "404":
+          description: Route not found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a route
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific route
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RouteConfig'
+        "404":
+          description: Route not found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get a route by ID
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Update an existing route configuration
+      parameters:
+      - description: Route ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated route configuration
+        in: body
+        name: route
+        required: true
+        schema:
+          $ref: '#/definitions/models.RouteConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RouteConfig'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Route not found
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update a route
+      tags:
+      - admin
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Returns the health status of the service and its backends
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HealthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/models.HealthResponse'
+      summary: Health check endpoint
+      tags:
+      - health
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

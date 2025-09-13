@@ -8,30 +8,30 @@ import (
 
 // BackendService represents a backend service configuration
 type BackendService struct {
-	ID             string                `json:"id" yaml:"id"`
-	Name           string                `json:"name" yaml:"name"`
-	Endpoints      []EndpointConfig      `json:"endpoints" yaml:"endpoints"`
-	LoadBalancer   LoadBalancerConfig    `json:"load_balancer" yaml:"load_balancer"`
-	HealthCheck    HealthCheckConfig     `json:"health_check" yaml:"health_check"`
-	CircuitBreaker CircuitBreakerConfig  `json:"circuit_breaker" yaml:"circuit_breaker"`
-	RetryPolicy    RetryPolicyConfig     `json:"retry_policy" yaml:"retry_policy"`
-	Enabled        bool                  `json:"enabled" yaml:"enabled"`
-	CreatedAt      time.Time             `json:"created_at" yaml:"created_at"`
-	UpdatedAt      time.Time             `json:"updated_at" yaml:"updated_at"`
+	ID             string                `json:"id" yaml:"id" mapstructure:"id"`
+	Name           string                `json:"name" yaml:"name" mapstructure:"name"`
+	Endpoints      []EndpointConfig      `json:"endpoints" yaml:"endpoints" mapstructure:"endpoints"`
+	LoadBalancer   LoadBalancerConfig    `json:"load_balancer" yaml:"load_balancer" mapstructure:"load_balancer"`
+	HealthCheck    HealthCheckConfig     `json:"health_check" yaml:"health_check" mapstructure:"health_check"`
+	CircuitBreaker CircuitBreakerConfig  `json:"circuit_breaker" yaml:"circuit_breaker" mapstructure:"circuit_breaker"`
+	RetryPolicy    RetryPolicyConfig     `json:"retry_policy" yaml:"retry_policy" mapstructure:"retry_policy"`
+	Enabled        bool                  `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+	CreatedAt      time.Time             `json:"created_at" yaml:"created_at" mapstructure:"created_at"`
+	UpdatedAt      time.Time             `json:"updated_at" yaml:"updated_at" mapstructure:"updated_at"`
 }
 
 // EndpointConfig represents a single endpoint in a backend service
 type EndpointConfig struct {
-	URL      string            `json:"url" yaml:"url"`
-	Weight   int               `json:"weight" yaml:"weight"`
-	Healthy  bool              `json:"healthy" yaml:"healthy"`
-	Metadata map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	URL      string            `json:"url" yaml:"url" mapstructure:"url"`
+	Weight   int               `json:"weight" yaml:"weight" mapstructure:"weight"`
+	Healthy  bool              `json:"healthy" yaml:"healthy" mapstructure:"healthy"`
+	Metadata map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 }
 
 // LoadBalancerConfig represents load balancer configuration
 type LoadBalancerConfig struct {
-	Algorithm     string `json:"algorithm" yaml:"algorithm"`
-	StickySession bool   `json:"sticky_session" yaml:"sticky_session"`
+	Algorithm     string `json:"algorithm" yaml:"algorithm" mapstructure:"algorithm"`
+	StickySession bool   `json:"sticky_session" yaml:"sticky_session" mapstructure:"sticky_session"`
 }
 
 // RetryPolicyConfig represents retry policy configuration
@@ -39,8 +39,8 @@ type RetryPolicyConfig struct {
 	Enabled         bool          `json:"enabled" yaml:"enabled"`
 	MaxAttempts     int           `json:"max_attempts" yaml:"max_attempts"`
 	Backoff         string        `json:"backoff" yaml:"backoff"`
-	InitialInterval time.Duration `json:"initial_interval" yaml:"initial_interval"`
-	MaxInterval     time.Duration `json:"max_interval" yaml:"max_interval"`
+	InitialInterval time.Duration `json:"initial_interval" yaml:"initial_interval" swaggertype:"integer"`
+	MaxInterval     time.Duration `json:"max_interval" yaml:"max_interval" swaggertype:"integer"`
 }
 
 // Validate validates the backend service configuration

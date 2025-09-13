@@ -10,6 +10,14 @@ import (
 )
 
 // HealthHandler returns an HTTP handler for health checks
+// @Summary      Health check endpoint
+// @Description  Returns the health status of the service and its backends
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.HealthResponse
+// @Failure      503  {object}  models.HealthResponse
+// @Router       /health [get]
 func HealthHandler(checker *health.Checker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get health status from checker

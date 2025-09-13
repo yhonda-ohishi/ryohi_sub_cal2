@@ -14,7 +14,16 @@
       "Bash(sed:*)",
       "Bash(go build:*)",
       "Bash(curl:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(scripts/check-task-prerequisites.sh:*)",
+      "Bash(touch:*)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(go list:*)",
+      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250912115335-f50e84826814/**)",
+      "Bash(go install:*)",
+      "Bash(swag init:*)",
+      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250913062429-a5a8e1a8879a/**)"
     ],
     "deny": [],
     "ask": []

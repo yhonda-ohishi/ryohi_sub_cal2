@@ -38,11 +38,19 @@ func NewChecker(cfg *config.Config, logger *slog.Logger) *Checker {
 func (c *Checker) Start(ctx context.Context) {
 	c.ctx, c.cancel = context.WithCancel(ctx)
 	
+	c.logger.Info("Starting health checker")
+	
 	// Initialize health status for each backend
 	for _, backend := range c.config.Backends {
 		if !backend.Enabled {
 			continue
 		}
+		
+		c.logger.Info("Initializing health check for backend", 
+			"backend", backend.ID, 
+			"healthcheck_enabled", backend.HealthCheck.Enabled,
+			"interval", backend.HealthCheck.Interval,
+			"path", backend.HealthCheck.Path)
 		
 		c.statuses[backend.ID] = &models.HealthStatus{
 			ServiceID: backend.ID,
@@ -52,6 +60,7 @@ func (c *Checker) Start(ctx context.Context) {
 		
 		// Start health check goroutine for this backend
 		if backend.HealthCheck.Enabled {
+			c.logger.Info("Starting health check goroutine", "backend", backend.ID, "interval", backend.HealthCheck.Interval)
 			go c.checkBackendHealth(backend)
 		}
 	}
@@ -115,6 +124,8 @@ func (c *Checker) checkBackendHealth(backend models.BackendService) {
 
 // performHealthCheck performs a single health check
 func (c *Checker) performHealthCheck(backend *models.BackendService) {
+	c.logger.Debug("Performing health check", "backend", backend.ID)
+	
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	
@@ -128,11 +139,18 @@ func (c *Checker) performHealthCheck(backend *models.BackendService) {
 	}
 	
 	// Check each endpoint
-	allHealthy := true
+	atLeastOneHealthy := false
 	var lastError string
 	
 	for _, endpoint := range backend.Endpoints {
 		healthy, responseTime, err := c.checkEndpoint(endpoint.URL, backend.HealthCheck)
+		
+		c.logger.Debug("Endpoint health check result", 
+			"backend", backend.ID, 
+			"endpoint", endpoint.URL, 
+			"healthy", healthy, 
+			"responseTime", responseTime,
+			"error", err)
 		
 		endpointHealth := &models.EndpointHealth{
 			URL:          endpoint.URL,
@@ -144,18 +162,23 @@ func (c *Checker) performHealthCheck(backend *models.BackendService) {
 		if err != nil {
 			endpointHealth.Error = err.Error()
 			lastError = err.Error()
-			allHealthy = false
+		}
+		
+		if healthy {
+			atLeastOneHealthy = true
 		}
 		
 		// Update endpoint status
 		status.UpdateEndpoint(endpoint.URL, endpointHealth)
 	}
 	
-	// Update overall status
-	if allHealthy {
-		status.Update(true, 0, "All endpoints healthy")
+	// Update overall status - backend is healthy if at least one endpoint is healthy
+	if atLeastOneHealthy {
+		status.Update(true, 0, "At least one endpoint healthy")
+		c.logger.Debug("Backend status updated to healthy", "backend", backend.ID)
 	} else {
 		status.Update(false, 0, lastError)
+		c.logger.Debug("Backend status updated to unhealthy", "backend", backend.ID, "error", lastError)
 	}
 }
 
@@ -182,7 +205,21 @@ func (c *Checker) checkEndpoint(url string, config models.HealthCheckConfig) (bo
 	defer resp.Body.Close()
 	
 	// Check if status code is expected
-	if !config.IsExpectedStatus(resp.StatusCode) {
+	expectedStatus := config.ExpectedStatus
+	if len(expectedStatus) == 0 {
+		expectedStatus = []int{200} // Default to 200 if not specified
+	}
+	
+	isExpected := false
+	for _, expected := range expectedStatus {
+		if resp.StatusCode == expected {
+			isExpected = true
+			break
+		}
+	}
+	
+	if !isExpected {
+		c.logger.Debug("Status code not expected", "url", healthURL, "statusCode", resp.StatusCode, "expected", expectedStatus)
 		return false, duration, nil
 	}
 	

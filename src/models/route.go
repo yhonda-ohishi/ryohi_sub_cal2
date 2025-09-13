@@ -12,7 +12,7 @@ type RouteConfig struct {
 	Path       string           `json:"path" yaml:"path"`
 	Method     []string         `json:"method" yaml:"method"`
 	Backend    string           `json:"backend" yaml:"backend"`
-	Timeout    time.Duration    `json:"timeout" yaml:"timeout"`
+	Timeout    time.Duration    `json:"timeout" yaml:"timeout" swaggertype:"integer" example:"30000000000"`
 	RateLimit  *RateLimitConfig `json:"rate_limit,omitempty" yaml:"rate_limit,omitempty"`
 	Auth       *AuthConfig      `json:"auth,omitempty" yaml:"auth,omitempty"`
 	Middleware []string         `json:"middleware,omitempty" yaml:"middleware,omitempty"`

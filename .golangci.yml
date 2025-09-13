@@ -1,88 +1,29 @@
+# golangci-lint configuration for Ryohi Router Module
+
 run:
   timeout: 5m
   tests: true
-  skip-dirs:
-    - vendor
-    - .git
-    - testdata
 
 linters:
   enable:
-    - bodyclose
-    - deadcode
-    - depguard
-    - dogsled
-    - dupl
-    - errcheck
-    - exhaustive
-    - gochecknoinits
-    - goconst
-    - gocritic
-    - gocyclo
     - gofmt
     - goimports
-    - golint
-    - gomnd
-    - goprintffuncname
-    - gosec
-    - gosimple
     - govet
-    - ineffassign
-    - interfacer
-    - lll
-    - misspell
-    - nakedret
-    - noctx
-    - nolintlint
-    - rowserrcheck
-    - scopelint
+    - errcheck
     - staticcheck
-    - structcheck
-    - stylecheck
+    - gosimple
+    - ineffassign
     - typecheck
-    - unconvert
-    - unparam
-    - unused
-    - varcheck
-    - whitespace
+    - gocritic
+    - revive
+    - gosec
+    - misspell
+    - bodyclose
 
 linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-  govet:
-    check-shadowing: true
-  gocyclo:
-    min-complexity: 15
-  maligned:
-    suggest-new: true
-  dupl:
-    threshold: 100
-  goconst:
-    min-len: 2
-    min-occurrences: 2
-  misspell:
-    locale: US
-  lll:
-    line-length: 120
+  gofmt:
+    simplify: true
   goimports:
     local-prefixes: github.com/your-org/ryohi-router
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - opinionated
-      - performance
-      - style
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - dupl
-        - gosec
-        - gomnd
-
-  fix: true
+  govet:
+    check-shadowing: true

@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"net/http/httptest"

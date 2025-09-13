@@ -7,13 +7,13 @@ import (
 
 // HealthCheckConfig represents health check configuration
 type HealthCheckConfig struct {
-	Enabled            bool          `json:"enabled" yaml:"enabled"`
-	Path               string        `json:"path" yaml:"path"`
-	Interval           time.Duration `json:"interval" yaml:"interval"`
-	Timeout            time.Duration `json:"timeout" yaml:"timeout"`
-	HealthyThreshold   int           `json:"healthy_threshold" yaml:"healthy_threshold"`
-	UnhealthyThreshold int           `json:"unhealthy_threshold" yaml:"unhealthy_threshold"`
-	ExpectedStatus     []int         `json:"expected_status" yaml:"expected_status"`
+	Enabled            bool          `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+	Path               string        `json:"path" yaml:"path" mapstructure:"path"`
+	Interval           time.Duration `json:"interval" yaml:"interval" mapstructure:"interval" swaggertype:"integer"`
+	Timeout            time.Duration `json:"timeout" yaml:"timeout" mapstructure:"timeout" swaggertype:"integer"`
+	HealthyThreshold   int           `json:"healthy_threshold" yaml:"healthy_threshold" mapstructure:"healthy_threshold"`
+	UnhealthyThreshold int           `json:"unhealthy_threshold" yaml:"unhealthy_threshold" mapstructure:"unhealthy_threshold"`
+	ExpectedStatus     []int         `json:"expected_status" yaml:"expected_status" mapstructure:"expected_status"`
 }
 
 // Validate validates the health check configuration
