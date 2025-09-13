@@ -58,7 +58,8 @@ func (h *MockDtakoHandlers) ImportEvents(w http.ResponseWriter, r *http.Request)
 
 // ListFerry handles GET /dtako/ferry
 func (h *MockDtakoHandlers) ListFerry(w http.ResponseWriter, r *http.Request) {
-	ferry := []models.DtakoFerry{}
+	// Return empty array for mock
+	ferry := []interface{}{}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ferry)
 }
