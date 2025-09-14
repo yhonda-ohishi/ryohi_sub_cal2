@@ -11,16 +11,16 @@ import (
 	"time"
 
 	"github.com/your-org/ryohi-router/src/lib/config"
+	"github.com/your-org/ryohi-router/src/lib/dtako"
+	"github.com/your-org/ryohi-router/src/lib/swagger"
 	"github.com/your-org/ryohi-router/src/server"
 
 	_ "github.com/joho/godotenv/autoload" // Auto-load .env file
-	_ "github.com/your-org/ryohi-router/docs"
-	_ "github.com/yhonda-ohishi/dtako_mod/docs" // DTako module with instance name "dtako"
 )
 
 // @title           Ryohi Router API
 // @version         1.0.0
-// @description     高性能なリクエストルーティングシステム
+// @description     高性能なリクエストルーティングシステム (DTako Module v1.3.3)
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -36,6 +36,7 @@ import (
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
+
 
 func main() {
 	// Parse command line flags
@@ -54,8 +55,29 @@ func main() {
 
 	// Setup logger
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
+		Level: slog.LevelDebug,
 	}))
+
+	// DTakoモジュールのバージョンを取得してSwaggerを更新
+	dtakoVersion, err := dtako.GetDTakoVersion()
+	if err != nil {
+		logger.Warn("Failed to get DTako version", "error", err)
+		dtakoVersion = "unknown"
+	}
+	logger.Info("DTako module version", "version", dtakoVersion)
+
+	// Integrate DTako Swagger BEFORE importing docs
+	swaggerMerger := swagger.NewSwaggerMerger("docs", logger)
+	if err := swaggerMerger.MergeOnStartup(); err != nil {
+		logger.Error("Failed to integrate DTako Swagger", "error", err)
+		// Continue execution - this is not a fatal error
+	}
+
+	// Swagger descriptionを動的に更新
+	if err := dtako.UpdateSwaggerDescription("docs"); err != nil {
+		logger.Warn("Failed to update Swagger description", "error", err)
+	}
+
 
 	// Load configuration
 	cfg, err := config.Load(*configFile)

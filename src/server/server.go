@@ -100,9 +100,10 @@ func (s *Server) setupMainRouter() http.Handler {
 	// Health endpoint (no auth required)
 	r.HandleFunc("/health", api.HealthHandler(s.healthChecker)).Methods("GET")
 	
-	// Swagger documentation endpoint
+	// Swagger documentation endpoint - Main API (includes DTako)
+	r.HandleFunc("/swagger/doc.json", api.CustomSwaggerHandler(s.logger)).Methods("GET")
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
-	
+
 	// Register DTako routes
 	s.dtakoService.RegisterRoutes(r)
 

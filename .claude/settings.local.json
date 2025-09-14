@@ -23,7 +23,16 @@
       "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250912115335-f50e84826814/**)",
       "Bash(go install:*)",
       "Bash(swag init:*)",
-      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250913062429-a5a8e1a8879a/**)"
+      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250913062429-a5a8e1a8879a/**)",
+      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250913084354-927b5935ce96/docs/**)",
+      "Read(//c/go/dtako_mod/**)",
+      "Read(//c/Users/mtama/go/pkg/mod/github.com/yhonda-ohishi/dtako_mod@v0.0.0-20250913090726-c9298995b81b/docs/**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -743,7 +743,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Ryohi Router API",
-	Description:      "高性能なリクエストルーティングシステム",
+	Description:      "高性能なリクエストルーティングシステム (DTako Module v1.3.3)",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

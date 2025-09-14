@@ -1,731 +1,1495 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "高性能なリクエストルーティングシステム",
-        "title": "Ryohi Router API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+  "basePath": "/",
+  "definitions": {
+    "models.AuthConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
         },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        "required": {
+          "type": "boolean"
         },
-        "version": "1.0.0"
-    },
-    "host": "localhost:8080",
-    "basePath": "/",
-    "paths": {
-        "/admin/backends": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get a list of all configured backend services",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "List all backends",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BackendService"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Add a new backend service configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Create a new backend",
-                "parameters": [
-                    {
-                        "description": "Backend configuration",
-                        "name": "backend",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.BackendService"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.BackendService"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         },
-        "/admin/backends/{id}/health": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get health status of a specific backend service",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Get backend health status",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Backend ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.ServiceHealthStatus"
-                        }
-                    },
-                    "404": {
-                        "description": "Backend not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/reload": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Reload the router configuration from file",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Reload configuration",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to reload configuration",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/routes": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get a list of all configured routes",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "List all routes",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RouteConfig"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Add a new route configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Create a new route",
-                "parameters": [
-                    {
-                        "description": "Route configuration",
-                        "name": "route",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RouteConfig"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.RouteConfig"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/routes/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get details of a specific route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Get a route by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Route ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.RouteConfig"
-                        }
-                    },
-                    "404": {
-                        "description": "Route not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Update an existing route configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Update a route",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Route ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated route configuration",
-                        "name": "route",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RouteConfig"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.RouteConfig"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Route not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Remove a route configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Delete a route",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Route ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Route not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/health": {
-            "get": {
-                "description": "Returns the health status of the service and its backends",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "health"
-                ],
-                "summary": "Health check endpoint",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.HealthResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/models.HealthResponse"
-                        }
-                    }
-                }
-            }
+        "type": {
+          "type": "string"
         }
+      },
+      "type": "object"
     },
-    "definitions": {
-        "models.AuthConfig": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                },
-                "required": {
-                    "type": "boolean"
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
+    "models.BackendService": {
+      "properties": {
+        "circuit_breaker": {
+          "$ref": "#/definitions/models.CircuitBreakerConfig"
         },
-        "models.BackendService": {
-            "type": "object",
-            "properties": {
-                "circuit_breaker": {
-                    "$ref": "#/definitions/models.CircuitBreakerConfig"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "endpoints": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.EndpointConfig"
-                    }
-                },
-                "health_check": {
-                    "$ref": "#/definitions/models.HealthCheckConfig"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "load_balancer": {
-                    "$ref": "#/definitions/models.LoadBalancerConfig"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "retry_policy": {
-                    "$ref": "#/definitions/models.RetryPolicyConfig"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
+        "created_at": {
+          "type": "string"
         },
-        "models.CircuitBreakerConfig": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                },
-                "failure_ratio": {
-                    "type": "number"
-                },
-                "interval": {
-                    "type": "integer"
-                },
-                "max_requests": {
-                    "type": "integer"
-                },
-                "minimum_requests": {
-                    "type": "integer"
-                },
-                "timeout": {
-                    "type": "integer"
-                }
-            }
+        "enabled": {
+          "type": "boolean"
         },
-        "models.EndpointConfig": {
-            "type": "object",
-            "properties": {
-                "healthy": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "url": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "integer"
-                }
-            }
+        "endpoints": {
+          "items": {
+            "$ref": "#/definitions/models.EndpointConfig"
+          },
+          "type": "array"
         },
-        "models.EndpointHealthStatus": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "response_time_ms": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
+        "health_check": {
+          "$ref": "#/definitions/models.HealthCheckConfig"
         },
-        "models.HealthCheckConfig": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                },
-                "expected_status": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "healthy_threshold": {
-                    "type": "integer"
-                },
-                "interval": {
-                    "type": "integer"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "timeout": {
-                    "type": "integer"
-                },
-                "unhealthy_threshold": {
-                    "type": "integer"
-                }
-            }
+        "id": {
+          "type": "string"
         },
-        "models.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "services": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/models.ServiceHealthInfo"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                }
-            }
+        "load_balancer": {
+          "$ref": "#/definitions/models.LoadBalancerConfig"
         },
-        "models.LoadBalancerConfig": {
-            "type": "object",
-            "properties": {
-                "algorithm": {
-                    "type": "string"
-                },
-                "sticky_session": {
-                    "type": "boolean"
-                }
-            }
+        "name": {
+          "type": "string"
         },
-        "models.RateLimitConfig": {
-            "type": "object",
-            "properties": {
-                "burst_size": {
-                    "type": "integer"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "key_type": {
-                    "type": "string"
-                },
-                "period": {
-                    "type": "string"
-                },
-                "rate": {
-                    "type": "integer"
-                },
-                "white_list": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
+        "retry_policy": {
+          "$ref": "#/definitions/models.RetryPolicyConfig"
         },
-        "models.RetryPolicyConfig": {
-            "type": "object",
-            "properties": {
-                "backoff": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "initial_interval": {
-                    "type": "integer"
-                },
-                "max_attempts": {
-                    "type": "integer"
-                },
-                "max_interval": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.RouteConfig": {
-            "type": "object",
-            "properties": {
-                "auth": {
-                    "$ref": "#/definitions/models.AuthConfig"
-                },
-                "backend": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "method": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "middleware": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "path": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "rate_limit": {
-                    "$ref": "#/definitions/models.RateLimitConfig"
-                },
-                "timeout": {
-                    "type": "integer",
-                    "example": 30000000000
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ServiceHealthInfo": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ServiceHealthStatus": {
-            "type": "object",
-            "properties": {
-                "endpoint_statuses": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/models.EndpointHealthStatus"
-                    }
-                },
-                "last_checked": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "service_id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
+        "updated_at": {
+          "type": "string"
         }
+      },
+      "type": "object"
     },
-    "securityDefinitions": {
-        "ApiKeyAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
+    "models.CircuitBreakerConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "failure_ratio": {
+          "type": "number"
+        },
+        "interval": {
+          "type": "integer"
+        },
+        "max_requests": {
+          "type": "integer"
+        },
+        "minimum_requests": {
+          "type": "integer"
+        },
+        "timeout": {
+          "type": "integer"
         }
+      },
+      "type": "object"
+    },
+    "models.DtakoEvent": {
+      "properties": {
+        "created_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "description": {
+          "example": "Started driving from depot",
+          "type": "string"
+        },
+        "driver_code": {
+          "example": "driver-123",
+          "type": "string"
+        },
+        "event_date": {
+          "example": "2025-01-13T10:30:00Z",
+          "type": "string"
+        },
+        "event_type": {
+          "example": "運転",
+          "type": "string"
+        },
+        "id": {
+          "example": "event-456",
+          "type": "string"
+        },
+        "latitude": {
+          "example": 35.6762,
+          "type": "number"
+        },
+        "longitude": {
+          "example": 139.6503,
+          "type": "number"
+        },
+        "unko_no": {
+          "description": "運行NO - links to DtakoRow",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "updated_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "vehicle_no": {
+          "example": "vehicle-001",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.DtakoFerryRow": {
+      "properties": {
+        "boarding_code": {
+          "description": "乗場CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "boarding_name": {
+          "description": "乗場名",
+          "example": "東京港",
+          "type": "string"
+        },
+        "contract_fare": {
+          "description": "契約料金",
+          "example": 8000,
+          "type": "integer"
+        },
+        "driver_code_1": {
+          "description": "乗務員CD1",
+          "example": 1001,
+          "type": "integer"
+        },
+        "driver_name_1": {
+          "description": "乗務員名１",
+          "example": "山田太郎",
+          "type": "string"
+        },
+        "end_time": {
+          "description": "終了日時",
+          "example": "2025-01-13T12:00:00Z",
+          "type": "string"
+        },
+        "estimated_distance": {
+          "description": "見なし距離",
+          "example": 500,
+          "type": "integer"
+        },
+        "ferry_company_code": {
+          "description": "フェリー会社CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "ferry_company_name": {
+          "description": "フェリー会社名",
+          "example": "東京フェリー",
+          "type": "string"
+        },
+        "ferry_search": {
+          "description": "ferry_srch",
+          "example": "東京-大阪",
+          "type": "string"
+        },
+        "id": {
+          "example": 1,
+          "type": "integer"
+        },
+        "landing_code": {
+          "description": "降場CD",
+          "example": 2,
+          "type": "integer"
+        },
+        "landing_name": {
+          "description": "降場名",
+          "example": "大阪港",
+          "type": "string"
+        },
+        "office_code": {
+          "description": "事業所CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "office_name": {
+          "description": "事業所名",
+          "example": "東京事業所",
+          "type": "string"
+        },
+        "read_date": {
+          "description": "読取日",
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "settlement_class": {
+          "description": "精算区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "settlement_name": {
+          "description": "精算区分名",
+          "example": "現金",
+          "type": "string"
+        },
+        "ship_number": {
+          "description": "便",
+          "example": "1便",
+          "type": "string"
+        },
+        "ship_vehicle_class": {
+          "description": "航送車種区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "ship_vehicle_name": {
+          "description": "航送車種区分名",
+          "example": "大型車",
+          "type": "string"
+        },
+        "standard_fare": {
+          "description": "標準料金",
+          "example": 10000,
+          "type": "integer"
+        },
+        "start_time": {
+          "description": "開始日時",
+          "example": "2025-01-13T08:00:00Z",
+          "type": "string"
+        },
+        "target_driver_class": {
+          "description": "対象乗務員区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "unko_date": {
+          "description": "運行日",
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "unko_no": {
+          "description": "運行NO",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "vehicle_code": {
+          "description": "車輌CD",
+          "example": 101,
+          "type": "integer"
+        },
+        "vehicle_name": {
+          "description": "車輌名",
+          "example": "トラック1号",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.DtakoRow": {
+      "properties": {
+        "created_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "date": {
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "distance": {
+          "example": 123.45,
+          "type": "number"
+        },
+        "driver_code": {
+          "example": "driver-123",
+          "type": "string"
+        },
+        "fuel_amount": {
+          "example": 45.67,
+          "type": "number"
+        },
+        "id": {
+          "example": "row-123",
+          "type": "string"
+        },
+        "read_date": {
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "route_code": {
+          "example": "route-A",
+          "type": "string"
+        },
+        "unko_no": {
+          "description": "運行NO",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "updated_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "vehicle_no": {
+          "example": "vehicle-001",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.EndpointConfig": {
+      "properties": {
+        "healthy": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "url": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.EndpointHealthStatus": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "response_time_ms": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ErrorResponse": {
+      "properties": {
+        "code": {
+          "example": 400,
+          "type": "integer"
+        },
+        "message": {
+          "example": "Invalid request parameters",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.HealthCheckConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "expected_status": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "healthy_threshold": {
+          "type": "integer"
+        },
+        "interval": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "timeout": {
+          "type": "integer"
+        },
+        "unhealthy_threshold": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.HealthResponse": {
+      "properties": {
+        "services": {
+          "additionalProperties": {
+            "$ref": "#/definitions/models.ServiceHealthInfo"
+          },
+          "type": "object"
+        },
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ImportRequest": {
+      "properties": {
+        "event_type": {
+          "description": "For events",
+          "example": "運転",
+          "type": "string"
+        },
+        "ferry_company": {
+          "description": "For ferry rows",
+          "example": "東京フェリー",
+          "type": "string"
+        },
+        "from_date": {
+          "example": "2025-01-01",
+          "type": "string"
+        },
+        "to_date": {
+          "example": "2025-01-31",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ImportResult": {
+      "properties": {
+        "errors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "imported_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "imported_rows": {
+          "example": 150,
+          "type": "integer"
+        },
+        "message": {
+          "example": "Imported 150 rows successfully",
+          "type": "string"
+        },
+        "success": {
+          "example": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "models.LoadBalancerConfig": {
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "sticky_session": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "models.RateLimitConfig": {
+      "properties": {
+        "burst_size": {
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "key_type": {
+          "type": "string"
+        },
+        "period": {
+          "type": "string"
+        },
+        "rate": {
+          "type": "integer"
+        },
+        "white_list": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "models.RetryPolicyConfig": {
+      "properties": {
+        "backoff": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "initial_interval": {
+          "type": "integer"
+        },
+        "max_attempts": {
+          "type": "integer"
+        },
+        "max_interval": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.RouteConfig": {
+      "properties": {
+        "auth": {
+          "$ref": "#/definitions/models.AuthConfig"
+        },
+        "backend": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "method": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "middleware": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "path": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "rate_limit": {
+          "$ref": "#/definitions/models.RateLimitConfig"
+        },
+        "timeout": {
+          "example": 30000000000,
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ServiceHealthInfo": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ServiceHealthStatus": {
+      "properties": {
+        "endpoint_statuses": {
+          "additionalProperties": {
+            "$ref": "#/definitions/models.EndpointHealthStatus"
+          },
+          "type": "object"
+        },
+        "last_checked": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "service_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
     }
+  },
+  "host": "localhost:8080",
+  "info": {
+    "contact": {
+      "email": "support@swagger.io",
+      "name": "API Support",
+      "url": "http://www.swagger.io/support"
+    },
+    "description": "高性能なリクエストルーティングシステム (DTako Module 1.3.3)",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "termsOfService": "http://swagger.io/terms/",
+    "title": "Ryohi Router API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/admin/backends": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get a list of all configured backend services",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.BackendService"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "List all backends",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Add a new backend service configuration",
+        "parameters": [
+          {
+            "description": "Backend configuration",
+            "in": "body",
+            "name": "backend",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.BackendService"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/models.BackendService"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Create a new backend",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/backends/{id}/health": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get health status of a specific backend service",
+        "parameters": [
+          {
+            "description": "Backend ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.ServiceHealthStatus"
+            }
+          },
+          "404": {
+            "description": "Backend not found",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Get backend health status",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/reload": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Reload the router configuration from file",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            }
+          },
+          "500": {
+            "description": "Failed to reload configuration",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Reload configuration",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/routes": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get a list of all configured routes",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.RouteConfig"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "List all routes",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Add a new route configuration",
+        "parameters": [
+          {
+            "description": "Route configuration",
+            "in": "body",
+            "name": "route",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Create a new route",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/routes/{id}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Remove a route configuration",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "No content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Delete a route",
+        "tags": [
+          "admin"
+        ]
+      },
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get details of a specific route",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
+          },
+          "404": {
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Get a route by ID",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Update an existing route configuration",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Updated route configuration",
+            "in": "body",
+            "name": "route",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "404": {
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Update a route",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/dtako/events": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get event data with location information and optional filtering",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Event type filter",
+            "in": "query",
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "description": "運行NO (Required for performance reasons)",
+            "in": "query",
+            "name": "unko_no",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Maximum number of records to return (default: 100, max: 1000)",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of dtako events",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoEvent"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List Dtako Events",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/events/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import event data from production database",
+        "parameters": [
+          {
+            "description": "Import request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Import successful",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import Dtako Events",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/events/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get specific event data by ID",
+        "parameters": [
+          {
+            "description": "Event ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dtako event found",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoEvent"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get Dtako Event by ID",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/ferry_rows": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Retrieve ferry row records with optional date range and ferry company filter",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Filter by ferry company name",
+            "in": "query",
+            "name": "ferry_company",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoFerryRow"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List ferry row records",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/ferry_rows/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import ferry row records from production database for a date range",
+        "parameters": [
+          {
+            "description": "Import request with date range and optional ferry company filter",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import ferry row records from production",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/ferry_rows/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Retrieve a specific ferry row record by its ID",
+        "parameters": [
+          {
+            "description": "Ferry row record ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoFerryRow"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get ferry row record by ID",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/rows": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get vehicle operation data with optional date and vehicle filtering",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Read date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "read_date",
+            "type": "string"
+          },
+          {
+            "description": "Vehicle CC filter",
+            "in": "query",
+            "name": "vehicle_cc",
+            "type": "string"
+          },
+          {
+            "description": "Vehicle CD filter",
+            "in": "query",
+            "name": "vehicle_cd",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of dtako rows",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoRow"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List Dtako Rows",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/dtako/rows/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import vehicle operation data from production database",
+        "parameters": [
+          {
+            "description": "Import request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Import successful",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import Dtako Rows",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/dtako/rows/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get specific vehicle operation data by ID",
+        "parameters": [
+          {
+            "description": "Row ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dtako row found",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoRow"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get Dtako Row by ID",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Returns the health status of the service and its backends",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.HealthResponse"
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "$ref": "#/definitions/models.HealthResponse"
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    }
+  },
+  "swagger": "2.0"
 }
