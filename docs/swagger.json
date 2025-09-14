@@ -1,957 +1,7 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Ryohi Router API",
-    "version": "1.0.0",
-    "description": "高性能なリクエストルーティングシステム (DTako Module 1.3.3)",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "API Support",
-      "email": "support@swagger.io",
-      "url": "http://www.swagger.io/support"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
-  },
-  "servers": [
-    {
-      "url": "http://localhost:8080",
-      "description": "Development server"
-    }
-  ],
-  "security": [
-    {
-      "ApiKeyAuth": []
-    }
-  ],
-  "paths": {
-    "/admin/backends": {
-      "get": {
-        "tags": ["admin"],
-        "summary": "List all backends",
-        "description": "Get a list of all configured backend services",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BackendService"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["admin"],
-        "summary": "Create a new backend",
-        "description": "Add a new backend service configuration",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Backend configuration",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BackendService"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BackendService"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/backends/{id}/health": {
-      "get": {
-        "tags": ["admin"],
-        "summary": "Get backend health status",
-        "description": "Get health status of a specific backend service",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Backend ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServiceHealthStatus"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Backend not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/reload": {
-      "post": {
-        "tags": ["admin"],
-        "summary": "Reload configuration",
-        "description": "Reload the router configuration from file",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to reload configuration",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/routes": {
-      "get": {
-        "tags": ["admin"],
-        "summary": "List all routes",
-        "description": "Get a list of all configured routes",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RouteConfig"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["admin"],
-        "summary": "Create a new route",
-        "description": "Add a new route configuration",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Route configuration",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteConfig"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteConfig"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/routes/{id}": {
-      "get": {
-        "tags": ["admin"],
-        "summary": "Get a route by ID",
-        "description": "Get details of a specific route",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Route ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteConfig"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Route not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["admin"],
-        "summary": "Update a route",
-        "description": "Update an existing route configuration",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Route ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Updated route configuration",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RouteConfig"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RouteConfig"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Route not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["admin"],
-        "summary": "Delete a route",
-        "description": "Remove a route configuration",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Route ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No content"
-          },
-          "404": {
-            "description": "Route not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/events": {
-      "get": {
-        "tags": ["dtako_events"],
-        "summary": "List Dtako Events",
-        "description": "Get event data with location information and optional filtering",
-        "parameters": [
-          {
-            "name": "from",
-            "in": "query",
-            "description": "Start date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "to",
-            "in": "query",
-            "description": "End date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "description": "Event type filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "unko_no",
-            "in": "query",
-            "description": "運行NO (Required for performance reasons)",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Maximum number of records to return (default: 100, max: 1000)",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of dtako events",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DtakoEvent"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/events/import": {
-      "post": {
-        "tags": ["dtako_events"],
-        "summary": "Import Dtako Events",
-        "description": "Import event data from production database",
-        "requestBody": {
-          "description": "Import request",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ImportRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Import successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/events/{id}": {
-      "get": {
-        "tags": ["dtako_events"],
-        "summary": "Get Dtako Event by ID",
-        "description": "Get specific event data by ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Event ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Dtako event found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DtakoEvent"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/ferry_rows": {
-      "get": {
-        "tags": ["dtako_ferry"],
-        "summary": "List ferry row records",
-        "description": "Retrieve ferry row records with optional date range and ferry company filter",
-        "parameters": [
-          {
-            "name": "from",
-            "in": "query",
-            "description": "Start date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "to",
-            "in": "query",
-            "description": "End date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "ferry_company",
-            "in": "query",
-            "description": "Filter by ferry company name",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DtakoFerryRow"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/ferry_rows/import": {
-      "post": {
-        "tags": ["dtako_ferry"],
-        "summary": "Import ferry row records from production",
-        "description": "Import ferry row records from production database for a date range",
-        "requestBody": {
-          "description": "Import request with date range and optional ferry company filter",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ImportRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/ferry_rows/{id}": {
-      "get": {
-        "tags": ["dtako_ferry"],
-        "summary": "Get ferry row record by ID",
-        "description": "Retrieve a specific ferry row record by its ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Ferry row record ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DtakoFerryRow"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/rows": {
-      "get": {
-        "tags": ["dtako_rows"],
-        "summary": "List Dtako Rows",
-        "description": "Get vehicle operation data with optional date and vehicle filtering",
-        "parameters": [
-          {
-            "name": "from",
-            "in": "query",
-            "description": "Start date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "to",
-            "in": "query",
-            "description": "End date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "read_date",
-            "in": "query",
-            "description": "Read date (YYYY-MM-DD)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "vehicle_cc",
-            "in": "query",
-            "description": "Vehicle CC filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "vehicle_cd",
-            "in": "query",
-            "description": "Vehicle CD filter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of dtako rows",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DtakoRow"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/rows/import": {
-      "post": {
-        "tags": ["dtako_rows"],
-        "summary": "Import Dtako Rows",
-        "description": "Import vehicle operation data from production database",
-        "requestBody": {
-          "description": "Import request",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ImportRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Import successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ImportResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/dtako/rows/{id}": {
-      "get": {
-        "tags": ["dtako_rows"],
-        "summary": "Get Dtako Row by ID",
-        "description": "Get specific vehicle operation data by ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Row ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Dtako row found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DtakoRow"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "tags": ["health"],
-        "summary": "Health check endpoint",
-        "description": "Returns the health status of the service and its backends",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service Unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "components": {
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization"
-      }
-    },
     "schemas": {
-      "AuthConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.AuthConfig": {
         "properties": {
           "enabled": {
             "type": "boolean"
@@ -960,21 +10,21 @@
             "type": "boolean"
           },
           "roles": {
-            "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "type": "array"
           },
           "type": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "BackendService": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.BackendService": {
         "properties": {
           "circuit_breaker": {
-            "$ref": "#/components/schemas/CircuitBreakerConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig"
           },
           "created_at": {
             "type": "string"
@@ -983,33 +33,33 @@
             "type": "boolean"
           },
           "endpoints": {
-            "type": "array",
             "items": {
-              "$ref": "#/components/schemas/EndpointConfig"
-            }
+              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.EndpointConfig"
+            },
+            "type": "array"
           },
           "health_check": {
-            "$ref": "#/components/schemas/HealthCheckConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthCheckConfig"
           },
           "id": {
             "type": "string"
           },
           "load_balancer": {
-            "$ref": "#/components/schemas/LoadBalancerConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.LoadBalancerConfig"
           },
           "name": {
             "type": "string"
           },
           "retry_policy": {
-            "$ref": "#/components/schemas/RetryPolicyConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RetryPolicyConfig"
           },
           "updated_at": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "CircuitBreakerConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig": {
         "properties": {
           "enabled": {
             "type": "boolean"
@@ -1029,263 +79,19 @@
           "timeout": {
             "type": "integer"
           }
-        }
+        },
+        "type": "object"
       },
-      "DtakoEvent": {
-        "type": "object",
-        "properties": {
-          "created_at": {
-            "type": "string",
-            "example": "2025-01-13T15:04:05Z"
-          },
-          "description": {
-            "type": "string",
-            "example": "Started driving from depot"
-          },
-          "driver_code": {
-            "type": "string",
-            "example": "driver-123"
-          },
-          "event_date": {
-            "type": "string",
-            "example": "2025-01-13T10:30:00Z"
-          },
-          "event_type": {
-            "type": "string",
-            "example": "運転"
-          },
-          "id": {
-            "type": "string",
-            "example": "event-456"
-          },
-          "latitude": {
-            "type": "number",
-            "example": 35.6762
-          },
-          "longitude": {
-            "type": "number",
-            "example": 139.6503
-          },
-          "unko_no": {
-            "type": "string",
-            "description": "運行NO - links to DtakoRow",
-            "example": "2025010101"
-          },
-          "updated_at": {
-            "type": "string",
-            "example": "2025-01-13T15:04:05Z"
-          },
-          "vehicle_no": {
-            "type": "string",
-            "example": "vehicle-001"
-          }
-        }
-      },
-      "DtakoFerryRow": {
-        "type": "object",
-        "properties": {
-          "boarding_code": {
-            "type": "integer",
-            "description": "乗場CD",
-            "example": 1
-          },
-          "boarding_name": {
-            "type": "string",
-            "description": "乗場名",
-            "example": "東京港"
-          },
-          "contract_fare": {
-            "type": "integer",
-            "description": "契約料金",
-            "example": 8000
-          },
-          "driver_code_1": {
-            "type": "integer",
-            "description": "乗務員CD1",
-            "example": 1001
-          },
-          "driver_name_1": {
-            "type": "string",
-            "description": "乗務員名１",
-            "example": "山田太郎"
-          },
-          "end_time": {
-            "type": "string",
-            "description": "終了日時",
-            "example": "2025-01-13T12:00:00Z"
-          },
-          "estimated_distance": {
-            "type": "integer",
-            "description": "見なし距離",
-            "example": 500
-          },
-          "ferry_company_code": {
-            "type": "integer",
-            "description": "フェリー会社CD",
-            "example": 1
-          },
-          "ferry_company_name": {
-            "type": "string",
-            "description": "フェリー会社名",
-            "example": "東京フェリー"
-          },
-          "ferry_search": {
-            "type": "string",
-            "description": "ferry_srch",
-            "example": "東京-大阪"
-          },
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "landing_code": {
-            "type": "integer",
-            "description": "降場CD",
-            "example": 2
-          },
-          "landing_name": {
-            "type": "string",
-            "description": "降場名",
-            "example": "大阪港"
-          },
-          "office_code": {
-            "type": "integer",
-            "description": "事業所CD",
-            "example": 1
-          },
-          "office_name": {
-            "type": "string",
-            "description": "事業所名",
-            "example": "東京事業所"
-          },
-          "read_date": {
-            "type": "string",
-            "description": "読取日",
-            "example": "2025-01-13T00:00:00Z"
-          },
-          "settlement_class": {
-            "type": "integer",
-            "description": "精算区分",
-            "example": 1
-          },
-          "settlement_name": {
-            "type": "string",
-            "description": "精算区分名",
-            "example": "現金"
-          },
-          "ship_number": {
-            "type": "string",
-            "description": "便",
-            "example": "1便"
-          },
-          "ship_vehicle_class": {
-            "type": "integer",
-            "description": "航送車種区分",
-            "example": 1
-          },
-          "ship_vehicle_name": {
-            "type": "string",
-            "description": "航送車種区分名",
-            "example": "大型車"
-          },
-          "standard_fare": {
-            "type": "integer",
-            "description": "標準料金",
-            "example": 10000
-          },
-          "start_time": {
-            "type": "string",
-            "description": "開始日時",
-            "example": "2025-01-13T08:00:00Z"
-          },
-          "target_driver_class": {
-            "type": "integer",
-            "description": "対象乗務員区分",
-            "example": 1
-          },
-          "unko_date": {
-            "type": "string",
-            "description": "運行日",
-            "example": "2025-01-13T00:00:00Z"
-          },
-          "unko_no": {
-            "type": "string",
-            "description": "運行NO",
-            "example": "2025010101"
-          },
-          "vehicle_code": {
-            "type": "integer",
-            "description": "車輌CD",
-            "example": 101
-          },
-          "vehicle_name": {
-            "type": "string",
-            "description": "車輌名",
-            "example": "トラック1号"
-          }
-        }
-      },
-      "DtakoRow": {
-        "type": "object",
-        "properties": {
-          "created_at": {
-            "type": "string",
-            "example": "2025-01-13T15:04:05Z"
-          },
-          "date": {
-            "type": "string",
-            "example": "2025-01-13T00:00:00Z"
-          },
-          "distance": {
-            "type": "number",
-            "example": 123.45
-          },
-          "driver_code": {
-            "type": "string",
-            "example": "driver-123"
-          },
-          "fuel_amount": {
-            "type": "number",
-            "example": 45.67
-          },
-          "id": {
-            "type": "string",
-            "example": "row-123"
-          },
-          "read_date": {
-            "type": "string",
-            "example": "2025-01-13T00:00:00Z"
-          },
-          "route_code": {
-            "type": "string",
-            "example": "route-A"
-          },
-          "unko_no": {
-            "type": "string",
-            "description": "運行NO",
-            "example": "2025010101"
-          },
-          "updated_at": {
-            "type": "string",
-            "example": "2025-01-13T15:04:05Z"
-          },
-          "vehicle_no": {
-            "type": "string",
-            "example": "vehicle-001"
-          }
-        }
-      },
-      "EndpointConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.EndpointConfig": {
         "properties": {
           "healthy": {
             "type": "boolean"
           },
           "metadata": {
-            "type": "object",
             "additionalProperties": {
               "type": "string"
-            }
+            },
+            "type": "object"
           },
           "url": {
             "type": "string"
@@ -1293,10 +99,10 @@
           "weight": {
             "type": "integer"
           }
-        }
+        },
+        "type": "object"
       },
-      "EndpointHealthStatus": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.EndpointHealthStatus": {
         "properties": {
           "message": {
             "type": "string"
@@ -1310,32 +116,19 @@
           "url": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "example": 400
-          },
-          "message": {
-            "type": "string",
-            "example": "Invalid request parameters"
-          }
-        }
-      },
-      "HealthCheckConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.HealthCheckConfig": {
         "properties": {
           "enabled": {
             "type": "boolean"
           },
           "expected_status": {
-            "type": "array",
             "items": {
               "type": "integer"
-            }
+            },
+            "type": "array"
           },
           "healthy_threshold": {
             "type": "integer"
@@ -1352,16 +145,16 @@
           "unhealthy_threshold": {
             "type": "integer"
           }
-        }
+        },
+        "type": "object"
       },
-      "HealthResponse": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.HealthResponse": {
         "properties": {
           "services": {
-            "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/ServiceHealthInfo"
-            }
+              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.ServiceHealthInfo"
+            },
+            "type": "object"
           },
           "status": {
             "type": "string"
@@ -1369,60 +162,10 @@
           "timestamp": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "ImportRequest": {
-        "type": "object",
-        "properties": {
-          "event_type": {
-            "type": "string",
-            "description": "For events",
-            "example": "運転"
-          },
-          "ferry_company": {
-            "type": "string",
-            "description": "For ferry rows",
-            "example": "東京フェリー"
-          },
-          "from_date": {
-            "type": "string",
-            "example": "2025-01-01"
-          },
-          "to_date": {
-            "type": "string",
-            "example": "2025-01-31"
-          }
-        }
-      },
-      "ImportResult": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "imported_at": {
-            "type": "string",
-            "example": "2025-01-13T15:04:05Z"
-          },
-          "imported_rows": {
-            "type": "integer",
-            "example": 150
-          },
-          "message": {
-            "type": "string",
-            "example": "Imported 150 rows successfully"
-          },
-          "success": {
-            "type": "boolean",
-            "example": true
-          }
-        }
-      },
-      "LoadBalancerConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.LoadBalancerConfig": {
         "properties": {
           "algorithm": {
             "type": "string"
@@ -1430,10 +173,10 @@
           "sticky_session": {
             "type": "boolean"
           }
-        }
+        },
+        "type": "object"
       },
-      "RateLimitConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.RateLimitConfig": {
         "properties": {
           "burst_size": {
             "type": "integer"
@@ -1451,15 +194,15 @@
             "type": "integer"
           },
           "white_list": {
-            "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "type": "array"
           }
-        }
+        },
+        "type": "object"
       },
-      "RetryPolicyConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.RetryPolicyConfig": {
         "properties": {
           "backoff": {
             "type": "string"
@@ -1476,13 +219,13 @@
           "max_interval": {
             "type": "integer"
           }
-        }
+        },
+        "type": "object"
       },
-      "RouteConfig": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.RouteConfig": {
         "properties": {
           "auth": {
-            "$ref": "#/components/schemas/AuthConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.AuthConfig"
           },
           "backend": {
             "type": "string"
@@ -1497,16 +240,16 @@
             "type": "string"
           },
           "method": {
-            "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "type": "array"
           },
           "middleware": {
-            "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "type": "array"
           },
           "path": {
             "type": "string"
@@ -1515,19 +258,19 @@
             "type": "integer"
           },
           "rate_limit": {
-            "$ref": "#/components/schemas/RateLimitConfig"
+            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RateLimitConfig"
           },
           "timeout": {
-            "type": "integer",
-            "example": 30000000000
+            "example": 30000000000,
+            "type": "integer"
           },
           "updated_at": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "ServiceHealthInfo": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.ServiceHealthInfo": {
         "properties": {
           "message": {
             "type": "string"
@@ -1535,16 +278,16 @@
           "status": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
       },
-      "ServiceHealthStatus": {
-        "type": "object",
+      "github_com_your-org_ryohi-router_src_models.ServiceHealthStatus": {
         "properties": {
           "endpoint_statuses": {
-            "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/EndpointHealthStatus"
-            }
+              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.EndpointHealthStatus"
+            },
+            "type": "object"
           },
           "last_checked": {
             "type": "string"
@@ -1558,8 +301,1248 @@
           "status": {
             "type": "string"
           }
-        }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
       }
     }
-  }
+  },
+  "definitions": {
+    "models.DtakoEvent": {
+      "properties": {
+        "created_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "description": {
+          "example": "Started driving from depot",
+          "type": "string"
+        },
+        "driver_code": {
+          "example": "driver-123",
+          "type": "string"
+        },
+        "event_date": {
+          "example": "2025-01-13T10:30:00Z",
+          "type": "string"
+        },
+        "event_type": {
+          "example": "運転",
+          "type": "string"
+        },
+        "id": {
+          "example": "event-456",
+          "type": "string"
+        },
+        "latitude": {
+          "example": 35.6762,
+          "type": "number"
+        },
+        "longitude": {
+          "example": 139.6503,
+          "type": "number"
+        },
+        "unko_no": {
+          "description": "運行NO - links to DtakoRow",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "updated_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "vehicle_no": {
+          "example": "vehicle-001",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.DtakoFerryRow": {
+      "properties": {
+        "boarding_code": {
+          "description": "乗場CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "boarding_name": {
+          "description": "乗場名",
+          "example": "東京港",
+          "type": "string"
+        },
+        "contract_fare": {
+          "description": "契約料金",
+          "example": 8000,
+          "type": "integer"
+        },
+        "driver_code_1": {
+          "description": "乗務員CD1",
+          "example": 1001,
+          "type": "integer"
+        },
+        "driver_name_1": {
+          "description": "乗務員名１",
+          "example": "山田太郎",
+          "type": "string"
+        },
+        "end_time": {
+          "description": "終了日時",
+          "example": "2025-01-13T12:00:00Z",
+          "type": "string"
+        },
+        "estimated_distance": {
+          "description": "見なし距離",
+          "example": 500,
+          "type": "integer"
+        },
+        "ferry_company_code": {
+          "description": "フェリー会社CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "ferry_company_name": {
+          "description": "フェリー会社名",
+          "example": "東京フェリー",
+          "type": "string"
+        },
+        "ferry_search": {
+          "description": "ferry_srch",
+          "example": "東京-大阪",
+          "type": "string"
+        },
+        "id": {
+          "example": 1,
+          "type": "integer"
+        },
+        "landing_code": {
+          "description": "降場CD",
+          "example": 2,
+          "type": "integer"
+        },
+        "landing_name": {
+          "description": "降場名",
+          "example": "大阪港",
+          "type": "string"
+        },
+        "office_code": {
+          "description": "事業所CD",
+          "example": 1,
+          "type": "integer"
+        },
+        "office_name": {
+          "description": "事業所名",
+          "example": "東京事業所",
+          "type": "string"
+        },
+        "read_date": {
+          "description": "読取日",
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "settlement_class": {
+          "description": "精算区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "settlement_name": {
+          "description": "精算区分名",
+          "example": "現金",
+          "type": "string"
+        },
+        "ship_number": {
+          "description": "便",
+          "example": "1便",
+          "type": "string"
+        },
+        "ship_vehicle_class": {
+          "description": "航送車種区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "ship_vehicle_name": {
+          "description": "航送車種区分名",
+          "example": "大型車",
+          "type": "string"
+        },
+        "standard_fare": {
+          "description": "標準料金",
+          "example": 10000,
+          "type": "integer"
+        },
+        "start_time": {
+          "description": "開始日時",
+          "example": "2025-01-13T08:00:00Z",
+          "type": "string"
+        },
+        "target_driver_class": {
+          "description": "対象乗務員区分",
+          "example": 1,
+          "type": "integer"
+        },
+        "unko_date": {
+          "description": "運行日",
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "unko_no": {
+          "description": "運行NO",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "vehicle_code": {
+          "description": "車輌CD",
+          "example": 101,
+          "type": "integer"
+        },
+        "vehicle_name": {
+          "description": "車輌名",
+          "example": "トラック1号",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.DtakoRow": {
+      "properties": {
+        "created_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "date": {
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "distance": {
+          "example": 123.45,
+          "type": "number"
+        },
+        "driver_code": {
+          "example": "driver-123",
+          "type": "string"
+        },
+        "fuel_amount": {
+          "example": 45.67,
+          "type": "number"
+        },
+        "id": {
+          "example": "row-123",
+          "type": "string"
+        },
+        "read_date": {
+          "example": "2025-01-13T00:00:00Z",
+          "type": "string"
+        },
+        "route_code": {
+          "example": "route-A",
+          "type": "string"
+        },
+        "unko_no": {
+          "description": "運行NO",
+          "example": "2025010101",
+          "type": "string"
+        },
+        "updated_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "vehicle_no": {
+          "example": "vehicle-001",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ErrorResponse": {
+      "properties": {
+        "code": {
+          "example": 400,
+          "type": "integer"
+        },
+        "message": {
+          "example": "Invalid request parameters",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ImportRequest": {
+      "properties": {
+        "event_type": {
+          "description": "For events",
+          "example": "運転",
+          "type": "string"
+        },
+        "ferry_company": {
+          "description": "For ferry rows",
+          "example": "東京フェリー",
+          "type": "string"
+        },
+        "from_date": {
+          "example": "2025-01-01",
+          "type": "string"
+        },
+        "to_date": {
+          "example": "2025-01-31",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ImportResult": {
+      "properties": {
+        "errors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "imported_at": {
+          "example": "2025-01-13T15:04:05Z",
+          "type": "string"
+        },
+        "imported_rows": {
+          "example": 150,
+          "type": "integer"
+        },
+        "message": {
+          "example": "Imported 150 rows successfully",
+          "type": "string"
+        },
+        "success": {
+          "example": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "info": {
+    "contact": {
+      "email": "support@swagger.io",
+      "name": "API Support",
+      "url": "http://www.swagger.io/support"
+    },
+    "description": "高性能なリクエストルーティングシステム (DTako Module 1.3.4)",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "termsOfService": "http://swagger.io/terms/",
+    "title": "Ryohi Router API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/admin/backends": {
+      "get": {
+        "description": "Get a list of all configured backend services",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "List all backends",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Add a new backend service configuration",
+        "parameters": [
+          {
+            "description": "Backend configuration",
+            "in": "body",
+            "name": "backend",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
+              }
+            }
+          },
+          "description": "Backend configuration",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Create a new backend",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/backends/{id}/health": {
+      "get": {
+        "description": "Get health status of a specific backend service",
+        "parameters": [
+          {
+            "description": "Backend ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.ServiceHealthStatus"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Backend not found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Get backend health status",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/reload": {
+      "post": {
+        "description": "Reload the router configuration from file",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Failed to reload configuration"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Reload configuration",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/routes": {
+      "get": {
+        "description": "Get a list of all configured routes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "List all routes",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Add a new route configuration",
+        "parameters": [
+          {
+            "description": "Route configuration",
+            "in": "body",
+            "name": "route",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+              }
+            }
+          },
+          "description": "Route configuration",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Create a new route",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/routes/{id}": {
+      "delete": {
+        "description": "Remove a route configuration",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "No content"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Delete a route",
+        "tags": [
+          "admin"
+        ]
+      },
+      "get": {
+        "description": "Get details of a specific route",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Get a route by ID",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "description": "Update an existing route configuration",
+        "parameters": [
+          {
+            "description": "Route ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+              }
+            }
+          },
+          "description": "Updated route configuration",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Update a route",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/dtako/events": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get event data with location information and optional filtering",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Event type filter",
+            "in": "query",
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "description": "運行NO (Required for performance reasons)",
+            "in": "query",
+            "name": "unko_no",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Maximum number of records to return (default: 100, max: 1000)",
+            "in": "query",
+            "name": "limit",
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of dtako events",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoEvent"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List Dtako Events",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/events/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import event data from production database",
+        "parameters": [
+          {
+            "description": "Import request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Import successful",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import Dtako Events",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/events/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get specific event data by ID",
+        "parameters": [
+          {
+            "description": "Event ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dtako event found",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoEvent"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get Dtako Event by ID",
+        "tags": [
+          "dtako_events"
+        ]
+      }
+    },
+    "/dtako/ferry_rows": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Retrieve ferry row records with optional date range and ferry company filter",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Filter by ferry company name",
+            "in": "query",
+            "name": "ferry_company",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoFerryRow"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List ferry row records",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/ferry_rows/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import ferry row records from production database for a date range",
+        "parameters": [
+          {
+            "description": "Import request with date range and optional ferry company filter",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import ferry row records from production",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/ferry_rows/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Retrieve a specific ferry row record by its ID",
+        "parameters": [
+          {
+            "description": "Ferry row record ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoFerryRow"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get ferry row record by ID",
+        "tags": [
+          "dtako_ferry"
+        ]
+      }
+    },
+    "/dtako/rows": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get vehicle operation data with optional date and vehicle filtering",
+        "parameters": [
+          {
+            "description": "Start date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from",
+            "type": "string"
+          },
+          {
+            "description": "End date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to",
+            "type": "string"
+          },
+          {
+            "description": "Read date (YYYY-MM-DD)",
+            "in": "query",
+            "name": "read_date",
+            "type": "string"
+          },
+          {
+            "description": "Vehicle CC filter",
+            "in": "query",
+            "name": "vehicle_cc",
+            "type": "string"
+          },
+          {
+            "description": "Vehicle CD filter",
+            "in": "query",
+            "name": "vehicle_cd",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of dtako rows",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.DtakoRow"
+              },
+              "type": "array"
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "List Dtako Rows",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/dtako/rows/import": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Import vehicle operation data from production database",
+        "parameters": [
+          {
+            "description": "Import request",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.ImportRequest"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Import successful",
+            "schema": {
+              "$ref": "#/definitions/models.ImportResult"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Import Dtako Rows",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/dtako/rows/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "description": "Get specific vehicle operation data by ID",
+        "parameters": [
+          {
+            "description": "Row ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dtako row found",
+            "schema": {
+              "$ref": "#/definitions/models.DtakoRow"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponse"
+            }
+          }
+        },
+        "summary": "Get Dtako Row by ID",
+        "tags": [
+          "dtako_rows"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Returns the health status of the service and its backends",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "description": "Development server",
+      "url": "http://localhost:8080/"
+    }
+  ]
 }

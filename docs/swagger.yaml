@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  models.AuthConfig:
+  github_com_your-org_ryohi-router_src_models.AuthConfig:
     properties:
       enabled:
         type: boolean
@@ -13,32 +13,32 @@ definitions:
       type:
         type: string
     type: object
-  models.BackendService:
+  github_com_your-org_ryohi-router_src_models.BackendService:
     properties:
       circuit_breaker:
-        $ref: '#/definitions/models.CircuitBreakerConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig'
       created_at:
         type: string
       enabled:
         type: boolean
       endpoints:
         items:
-          $ref: '#/definitions/models.EndpointConfig'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.EndpointConfig'
         type: array
       health_check:
-        $ref: '#/definitions/models.HealthCheckConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.HealthCheckConfig'
       id:
         type: string
       load_balancer:
-        $ref: '#/definitions/models.LoadBalancerConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.LoadBalancerConfig'
       name:
         type: string
       retry_policy:
-        $ref: '#/definitions/models.RetryPolicyConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RetryPolicyConfig'
       updated_at:
         type: string
     type: object
-  models.CircuitBreakerConfig:
+  github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig:
     properties:
       enabled:
         type: boolean
@@ -53,7 +53,7 @@ definitions:
       timeout:
         type: integer
     type: object
-  models.EndpointConfig:
+  github_com_your-org_ryohi-router_src_models.EndpointConfig:
     properties:
       healthy:
         type: boolean
@@ -66,7 +66,7 @@ definitions:
       weight:
         type: integer
     type: object
-  models.EndpointHealthStatus:
+  github_com_your-org_ryohi-router_src_models.EndpointHealthStatus:
     properties:
       message:
         type: string
@@ -77,7 +77,7 @@ definitions:
       url:
         type: string
     type: object
-  models.HealthCheckConfig:
+  github_com_your-org_ryohi-router_src_models.HealthCheckConfig:
     properties:
       enabled:
         type: boolean
@@ -96,25 +96,25 @@ definitions:
       unhealthy_threshold:
         type: integer
     type: object
-  models.HealthResponse:
+  github_com_your-org_ryohi-router_src_models.HealthResponse:
     properties:
       services:
         additionalProperties:
-          $ref: '#/definitions/models.ServiceHealthInfo'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.ServiceHealthInfo'
         type: object
       status:
         type: string
       timestamp:
         type: string
     type: object
-  models.LoadBalancerConfig:
+  github_com_your-org_ryohi-router_src_models.LoadBalancerConfig:
     properties:
       algorithm:
         type: string
       sticky_session:
         type: boolean
     type: object
-  models.RateLimitConfig:
+  github_com_your-org_ryohi-router_src_models.RateLimitConfig:
     properties:
       burst_size:
         type: integer
@@ -131,7 +131,7 @@ definitions:
           type: string
         type: array
     type: object
-  models.RetryPolicyConfig:
+  github_com_your-org_ryohi-router_src_models.RetryPolicyConfig:
     properties:
       backoff:
         type: string
@@ -144,10 +144,10 @@ definitions:
       max_interval:
         type: integer
     type: object
-  models.RouteConfig:
+  github_com_your-org_ryohi-router_src_models.RouteConfig:
     properties:
       auth:
-        $ref: '#/definitions/models.AuthConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.AuthConfig'
       backend:
         type: string
       created_at:
@@ -169,25 +169,25 @@ definitions:
       priority:
         type: integer
       rate_limit:
-        $ref: '#/definitions/models.RateLimitConfig'
+        $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RateLimitConfig'
       timeout:
         example: 30000000000
         type: integer
       updated_at:
         type: string
     type: object
-  models.ServiceHealthInfo:
+  github_com_your-org_ryohi-router_src_models.ServiceHealthInfo:
     properties:
       message:
         type: string
       status:
         type: string
     type: object
-  models.ServiceHealthStatus:
+  github_com_your-org_ryohi-router_src_models.ServiceHealthStatus:
     properties:
       endpoint_statuses:
         additionalProperties:
-          $ref: '#/definitions/models.EndpointHealthStatus'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.EndpointHealthStatus'
         type: object
       last_checked:
         type: string
@@ -204,7 +204,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: 高性能なリクエストルーティングシステム (DTako Module 1.3.3)
+  description: 高性能なリクエストルーティングシステム (DTako Module 1.3.4)
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -224,7 +224,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.BackendService'
+              $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.BackendService'
             type: array
       security:
       - ApiKeyAuth: []
@@ -241,14 +241,14 @@ paths:
         name: backend
         required: true
         schema:
-          $ref: '#/definitions/models.BackendService'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.BackendService'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.BackendService'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.BackendService'
         "400":
           description: Invalid request body
           schema:
@@ -275,7 +275,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ServiceHealthStatus'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.ServiceHealthStatus'
         "404":
           description: Backend not found
           schema:
@@ -320,7 +320,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.RouteConfig'
+              $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
             type: array
       security:
       - ApiKeyAuth: []
@@ -337,14 +337,14 @@ paths:
         name: route
         required: true
         schema:
-          $ref: '#/definitions/models.RouteConfig'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.RouteConfig'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
         "400":
           description: Invalid request body
           schema:
@@ -397,7 +397,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RouteConfig'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
         "404":
           description: Route not found
           schema:
@@ -422,14 +422,14 @@ paths:
         name: route
         required: true
         schema:
-          $ref: '#/definitions/models.RouteConfig'
+          $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RouteConfig'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig'
         "400":
           description: Invalid request body
           schema:
@@ -454,11 +454,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.HealthResponse'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.HealthResponse'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/models.HealthResponse'
+            $ref: '#/definitions/github_com_your-org_ryohi-router_src_models.HealthResponse'
       summary: Health check endpoint
       tags:
       - health
