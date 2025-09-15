@@ -204,7 +204,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: 高性能なリクエストルーティングシステム (DTako Module 1.4.0, ETC Meisai Module 0.0.7)
+  description: 高性能なリクエストルーティングシステム (DTako Module 1.4.0, ETC Meisai Module 0.0.16)
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html

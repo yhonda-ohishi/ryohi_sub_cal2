@@ -19,8 +19,8 @@ func CustomSwaggerHandler(logger *slog.Logger) http.HandlerFunc {
 			logger.Warn("Failed to integrate DTako microservices Swagger in handler", "error", err)
 		}
 
-		// Read the merged swagger file
-		swaggerPath := filepath.Join("docs", "swagger.json")
+		// Read the merged OpenAPI file
+		swaggerPath := filepath.Join("docs", "openapi.json")
 		data, err := ioutil.ReadFile(swaggerPath)
 		if err != nil {
 			http.Error(w, "Failed to read swagger file", http.StatusInternalServerError)

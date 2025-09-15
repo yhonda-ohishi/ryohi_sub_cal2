@@ -1,14 +1,15 @@
 package etc_meisai
 
 import (
+	"io"
 	"log"
 	"net/http"
-	"reflect"
 	"regexp"
 	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/yhonda-ohishi/etc_meisai"
+	"gopkg.in/yaml.v3"
 )
 
 // EtcMeisaiService manages the etc_meisai module integration
@@ -69,80 +70,78 @@ func (s *EtcMeisaiService) autoDiscoverAndRegisterRoutes(router *mux.Router) {
 	log.Printf("Successfully registered %d/%d endpoints automatically", registered, total)
 }
 
-// discoverAvailableHandlers uses reflection to find all available handlers
+// discoverAvailableHandlers dynamically discovers all available handlers
 func (s *EtcMeisaiService) discoverAvailableHandlers() map[string]func(http.ResponseWriter, *http.Request) {
-	handlers := make(map[string]func(http.ResponseWriter, *http.Request))
-
-	// Get the etc_meisai package type
-	pkgType := reflect.TypeOf(etc_meisai.HealthCheckHandler)
-	if pkgType == nil {
-		log.Println("Could not access etc_meisai package")
-		return handlers
+	// Use GlobalRegistry from etc_meisai v0.0.15+ for complete automation
+	if etc_meisai.GlobalRegistry != nil {
+		return etc_meisai.GlobalRegistry.GetAll()
 	}
-
-	// List of known handler names to check
-	knownHandlers := []string{
-		"HealthCheckHandler",
-		"GetAvailableAccountsHandler",
-		"DownloadETCDataHandler",
-		"DownloadSingleAccountHandler",
-		"DownloadAsyncHandler",
-		"GetDownloadStatusHandler",
-		"ParseCSVHandler",
-		"ImportDataHandler",
-		"GetMeisaiListHandler",
-		"CreateMeisaiHandler",
-		"GetMeisaiByIDHandler",
-		"GetSummaryHandler",
-	}
-
-	// Use reflection to check each handler
-	_ = pkgType // Prevent unused variable error
-
-	for _, handlerName := range knownHandlers {
-		if handlerFunc := s.getHandlerByName(handlerName); handlerFunc != nil {
-			handlers[handlerName] = handlerFunc
-			log.Printf("Discovered handler: %s", handlerName)
-		}
-	}
-
-	return handlers
+	// Fallback to generated registry if GlobalRegistry is not available
+	return s.DynamicHandlerRegistry()
 }
 
-// getHandlerByName safely retrieves a handler function by name using reflection
-func (s *EtcMeisaiService) getHandlerByName(name string) func(http.ResponseWriter, *http.Request) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("Handler %s not available: %v", name, r)
-		}
-	}()
 
-	// Use reflection to get the handler from the package
-	etcMeisaiValue := reflect.ValueOf(etc_meisai.HealthCheckHandler).Type().PkgPath()
-	_ = etcMeisaiValue // Prevent unused variable error
-
-	// For safety, directly check known handlers
-	switch name {
-	case "HealthCheckHandler":
-		return etc_meisai.HealthCheckHandler
-	case "GetAvailableAccountsHandler":
-		return etc_meisai.GetAvailableAccountsHandler
-	case "DownloadETCDataHandler":
-		return etc_meisai.DownloadETCDataHandler
-	case "DownloadSingleAccountHandler":
-		return etc_meisai.DownloadSingleAccountHandler
-	case "ParseCSVHandler":
-		return etc_meisai.ParseCSVHandler
-	// Add more handlers as they become available in the module
-	default:
-		return nil
-	}
-}
-
-// getSwaggerEndpoints extracts all endpoints from the Swagger spec
+// getSwaggerEndpoints dynamically extracts all endpoints from the etc_meisai Swagger spec
 func (s *EtcMeisaiService) getSwaggerEndpoints() []SwaggerEndpoint {
-	// Define the endpoints based on the Swagger spec we analyzed
-	endpoints := []SwaggerEndpoint{
+	var endpoints []SwaggerEndpoint
+
+	// Try to fetch Swagger from GitHub
+	resp, err := http.Get("https://raw.githubusercontent.com/yhonda-ohishi/etc_meisai/master/docs/swagger.yaml")
+	if err != nil {
+		log.Printf("Failed to fetch Swagger from GitHub: %v", err)
+		// Fall back to hardcoded endpoints if fetch fails
+		return s.getFallbackEndpoints()
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Failed to read Swagger response: %v", err)
+		return s.getFallbackEndpoints()
+	}
+
+	// Parse YAML
+	var swagger map[string]interface{}
+	if err := yaml.Unmarshal(body, &swagger); err != nil {
+		log.Printf("Failed to parse Swagger YAML: %v", err)
+		return s.getFallbackEndpoints()
+	}
+
+	// Extract paths
+	paths, ok := swagger["paths"].(map[string]interface{})
+	if !ok {
+		log.Printf("No paths found in Swagger spec")
+		return s.getFallbackEndpoints()
+	}
+
+	// Extract endpoints from paths
+	for path, pathItem := range paths {
+		if pathMap, ok := pathItem.(map[string]interface{}); ok {
+			var methods []string
+			for method := range pathMap {
+				// Filter out non-HTTP methods
+				upperMethod := strings.ToUpper(method)
+				if upperMethod == "GET" || upperMethod == "POST" || upperMethod == "PUT" || upperMethod == "DELETE" || upperMethod == "PATCH" {
+					methods = append(methods, upperMethod)
+				}
+			}
+			if len(methods) > 0 {
+				endpoints = append(endpoints, SwaggerEndpoint{
+					Path:    path,
+					Methods: methods,
+				})
+			}
+		}
+	}
+
+	log.Printf("Dynamically discovered %d endpoints from Swagger", len(endpoints))
+	return endpoints
+}
+
+// getFallbackEndpoints returns hardcoded endpoints as fallback
+func (s *EtcMeisaiService) getFallbackEndpoints() []SwaggerEndpoint {
+	log.Println("Using fallback hardcoded endpoints")
+	return []SwaggerEndpoint{
 		{Path: "/health", Methods: []string{"GET"}},
 		{Path: "/api/etc/accounts", Methods: []string{"GET"}},
 		{Path: "/api/etc/download", Methods: []string{"POST"}},
@@ -155,8 +154,6 @@ func (s *EtcMeisaiService) getSwaggerEndpoints() []SwaggerEndpoint {
 		{Path: "/api/etc/meisai/{id}", Methods: []string{"GET"}},
 		{Path: "/api/etc/summary", Methods: []string{"GET"}},
 	}
-
-	return endpoints
 }
 
 // pathToHandlerName converts a path and methods to expected handler name

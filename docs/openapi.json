@@ -1,5 +1,550 @@
 {
-  "basePath": "/",
+  "components": {
+    "schemas": {
+      "DownloadRequest": {
+        "properties": {
+          "accounts": {
+            "description": "アカウント情報の配列。\n省略した場合は環境変数 `ETC_CORP_ACCOUNTS` から自動的に読み込まれます。\n\n環境変数の形式: `ohishiexp:pass1,ohishiexp1:pass2`\n",
+            "items": {
+              "properties": {
+                "password": {
+                  "description": "ETCサイトのパスワード",
+                  "example": "password123",
+                  "type": "string"
+                },
+                "user_id": {
+                  "description": "ETCサイトのユーザーID",
+                  "example": "ohishiexp",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "user_id",
+                "password"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "config": {
+            "description": "スクレイピング処理の詳細設定（省略可能）",
+            "properties": {
+              "download_path": {
+                "default": "./downloads",
+                "description": "CSVファイルのダウンロード先ディレクトリ",
+                "example": "./custom_downloads",
+                "type": "string"
+              },
+              "headless": {
+                "default": true,
+                "description": "ブラウザを非表示モードで実行するか",
+                "type": "boolean"
+              },
+              "retry_count": {
+                "default": 3,
+                "description": "エラー時のリトライ回数",
+                "example": 5,
+                "type": "integer"
+              },
+              "timeout": {
+                "default": 30000,
+                "description": "タイムアウト時間（ミリ秒）",
+                "example": 60000,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "from_date": {
+            "description": "明細取得開始日（YYYY-MM-DD形式）",
+            "example": "2025-08-01",
+            "format": "date",
+            "type": "string"
+          },
+          "to_date": {
+            "description": "明細取得終了日（YYYY-MM-DD形式）",
+            "example": "2025-09-15",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from_date",
+          "to_date"
+        ],
+        "type": "object"
+      },
+      "DownloadResponse": {
+        "properties": {
+          "failed_count": {
+            "description": "失敗アカウント数",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/DownloadResult"
+            },
+            "type": "array"
+          },
+          "success_count": {
+            "description": "成功アカウント数",
+            "type": "integer"
+          },
+          "total_records": {
+            "description": "総レコード数",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "DownloadResult": {
+        "properties": {
+          "account": {
+            "description": "アカウント名",
+            "type": "string"
+          },
+          "csv_path": {
+            "description": "ダウンロードしたCSVファイルのパス",
+            "type": "string"
+          },
+          "error": {
+            "description": "エラーメッセージ（失敗時）",
+            "type": "string"
+          },
+          "record_count": {
+            "description": "レコード数",
+            "type": "integer"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/ETCMeisai"
+            },
+            "type": "array"
+          },
+          "success": {
+            "description": "処理成功フラグ",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "ETCMeisai": {
+        "properties": {
+          "amount": {
+            "description": "通行料金",
+            "example": 1200,
+            "type": "integer"
+          },
+          "card_number": {
+            "description": "ETCカード番号",
+            "example": "****1234",
+            "type": "string"
+          },
+          "created_at": {
+            "description": "作成日時",
+            "format": "date-time",
+            "type": "string"
+          },
+          "discount_amount": {
+            "description": "割引額",
+            "example": 300,
+            "type": "integer"
+          },
+          "distance": {
+            "description": "走行距離(km)",
+            "example": 35.2,
+            "format": "float",
+            "type": "number"
+          },
+          "entrance_ic": {
+            "description": "IC入口",
+            "example": "東京",
+            "type": "string"
+          },
+          "exit_ic": {
+            "description": "IC出口",
+            "example": "横浜",
+            "type": "string"
+          },
+          "id": {
+            "description": "明細ID",
+            "type": "integer"
+          },
+          "note": {
+            "description": "備考",
+            "type": "string"
+          },
+          "total_amount": {
+            "description": "請求額",
+            "example": 900,
+            "type": "integer"
+          },
+          "unko_no": {
+            "description": "運行番号",
+            "example": "UN20250915001",
+            "type": "string"
+          },
+          "usage_date": {
+            "description": "利用年月日",
+            "example": "2025-09-15",
+            "type": "string"
+          },
+          "usage_time": {
+            "description": "利用時刻",
+            "example": "14:30",
+            "type": "string"
+          },
+          "vehicle_number": {
+            "description": "車両番号",
+            "example": "品川500あ1234",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SingleDownloadRequest": {
+        "properties": {
+          "from_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "password": {
+            "description": "パスワード",
+            "type": "string"
+          },
+          "to_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "user_id": {
+            "description": "ETCサイトのユーザーID。\n異なるアカウントタイプ（ohishiexp, ohishiexp1）で\nページ構造が異なるため、正しいユーザーIDを指定してください。\n",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "password",
+          "from_date",
+          "to_date"
+        ],
+        "type": "object"
+      },
+      "models.DtakoEvent": {
+        "properties": {
+          "created_at": {
+            "example": "2025-01-13T15:04:05Z",
+            "type": "string"
+          },
+          "description": {
+            "example": "Started driving from depot",
+            "type": "string"
+          },
+          "driver_code": {
+            "example": "driver-123",
+            "type": "string"
+          },
+          "event_date": {
+            "example": "2025-01-13T10:30:00Z",
+            "type": "string"
+          },
+          "event_type": {
+            "example": "運転",
+            "type": "string"
+          },
+          "id": {
+            "example": "event-456",
+            "type": "string"
+          },
+          "latitude": {
+            "example": 35.6762,
+            "type": "number"
+          },
+          "longitude": {
+            "example": 139.6503,
+            "type": "number"
+          },
+          "unko_no": {
+            "description": "運行NO - links to DtakoRow",
+            "example": "2025010101",
+            "type": "string"
+          },
+          "updated_at": {
+            "example": "2025-01-13T15:04:05Z",
+            "type": "string"
+          },
+          "vehicle_no": {
+            "example": "vehicle-001",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "models.DtakoFerryRow": {
+        "properties": {
+          "boarding_code": {
+            "description": "乗場CD",
+            "example": 1,
+            "type": "integer"
+          },
+          "boarding_name": {
+            "description": "乗場名",
+            "example": "東京港",
+            "type": "string"
+          },
+          "contract_fare": {
+            "description": "契約料金",
+            "example": 8000,
+            "type": "integer"
+          },
+          "driver_code_1": {
+            "description": "乗務員CD1",
+            "example": 1001,
+            "type": "integer"
+          },
+          "driver_name_1": {
+            "description": "乗務員名１",
+            "example": "山田太郎",
+            "type": "string"
+          },
+          "end_time": {
+            "description": "終了日時",
+            "example": "2025-01-13T12:00:00Z",
+            "type": "string"
+          },
+          "estimated_distance": {
+            "description": "見なし距離",
+            "example": 500,
+            "type": "integer"
+          },
+          "ferry_company_code": {
+            "description": "フェリー会社CD",
+            "example": 1,
+            "type": "integer"
+          },
+          "ferry_company_name": {
+            "description": "フェリー会社名",
+            "example": "東京フェリー",
+            "type": "string"
+          },
+          "ferry_search": {
+            "description": "ferry_srch",
+            "example": "東京-大阪",
+            "type": "string"
+          },
+          "id": {
+            "example": 1,
+            "type": "integer"
+          },
+          "landing_code": {
+            "description": "降場CD",
+            "example": 2,
+            "type": "integer"
+          },
+          "landing_name": {
+            "description": "降場名",
+            "example": "大阪港",
+            "type": "string"
+          },
+          "office_code": {
+            "description": "事業所CD",
+            "example": 1,
+            "type": "integer"
+          },
+          "office_name": {
+            "description": "事業所名",
+            "example": "東京事業所",
+            "type": "string"
+          },
+          "read_date": {
+            "description": "読取日",
+            "example": "2025-01-13T00:00:00Z",
+            "type": "string"
+          },
+          "settlement_class": {
+            "description": "精算区分",
+            "example": 1,
+            "type": "integer"
+          },
+          "settlement_name": {
+            "description": "精算区分名",
+            "example": "現金",
+            "type": "string"
+          },
+          "ship_number": {
+            "description": "便",
+            "example": "1便",
+            "type": "string"
+          },
+          "ship_vehicle_class": {
+            "description": "航送車種区分",
+            "example": 1,
+            "type": "integer"
+          },
+          "ship_vehicle_name": {
+            "description": "航送車種区分名",
+            "example": "大型車",
+            "type": "string"
+          },
+          "standard_fare": {
+            "description": "標準料金",
+            "example": 10000,
+            "type": "integer"
+          },
+          "start_time": {
+            "description": "開始日時",
+            "example": "2025-01-13T08:00:00Z",
+            "type": "string"
+          },
+          "target_driver_class": {
+            "description": "対象乗務員区分",
+            "example": 1,
+            "type": "integer"
+          },
+          "unko_date": {
+            "description": "運行日",
+            "example": "2025-01-13T00:00:00Z",
+            "type": "string"
+          },
+          "unko_no": {
+            "description": "運行NO",
+            "example": "2025010101",
+            "type": "string"
+          },
+          "vehicle_code": {
+            "description": "車輌CD",
+            "example": 101,
+            "type": "integer"
+          },
+          "vehicle_name": {
+            "description": "車輌名",
+            "example": "トラック1号",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "models.DtakoRow": {
+        "properties": {
+          "created_at": {
+            "example": "2025-01-13T15:04:05Z",
+            "type": "string"
+          },
+          "date": {
+            "example": "2025-01-13T00:00:00Z",
+            "type": "string"
+          },
+          "distance": {
+            "example": 123.45,
+            "type": "number"
+          },
+          "driver_code": {
+            "example": "driver-123",
+            "type": "string"
+          },
+          "fuel_amount": {
+            "example": 45.67,
+            "type": "number"
+          },
+          "id": {
+            "example": "row-123",
+            "type": "string"
+          },
+          "read_date": {
+            "example": "2025-01-13T00:00:00Z",
+            "type": "string"
+          },
+          "route_code": {
+            "example": "route-A",
+            "type": "string"
+          },
+          "unko_no": {
+            "description": "運行NO",
+            "example": "2025010101",
+            "type": "string"
+          },
+          "updated_at": {
+            "example": "2025-01-13T15:04:05Z",
+            "type": "string"
+          },
+          "vehicle_no": {
+            "example": "vehicle-001",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "models.ErrorResponse": {
+        "properties": {
+          "code": {
+            "example": 400,
+            "type": "integer"
+          },
+          "message": {
+            "example": "Invalid request parameters",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "models.ImportRequest": {
+        "properties": {
+          "event_type": {
+            "description": "For events",
+            "example": "運転",
+            "type": "string"
+          },
+          "ferry_company": {
+            "description": "For ferry rows",
+            "example": "東京フェリー",
+            "type": "string"
+          },
+          "from_date": {
+            "example": "2025-01-01",
+            "type": "string"
+          },
+          "to_date": {
+            "example": "2025-01-31",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "models.ImportResult": {
+        "properties": {
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "imported_at": {
+            "example": "2025-01-13T15:04:05Z",
+            "type": "string"
+          },
+          "imported_rows": {
+            "example": 150,
+            "type": "integer"
+          },
+          "message": {
+            "example": "Imported 150 rows successfully",
+            "type": "string"
+          },
+          "success": {
+            "example": true,
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
   "definitions": {
     "DownloadRequest": {
       "properties": {
@@ -82,7 +627,7 @@
         },
         "results": {
           "items": {
-            "$ref": "#/definitions/DownloadResult"
+            "$ref": "#/components/schemas/DownloadResult"
           },
           "type": "array"
         },
@@ -117,7 +662,7 @@
         },
         "records": {
           "items": {
-            "$ref": "#/definitions/ETCMeisai"
+            "$ref": "#/components/schemas/ETCMeisai"
           },
           "type": "array"
         },
@@ -227,87 +772,6 @@
         "from_date",
         "to_date"
       ],
-      "type": "object"
-    },
-    "models.AuthConfig": {
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "required": {
-          "type": "boolean"
-        },
-        "roles": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "type": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "models.BackendService": {
-      "properties": {
-        "circuit_breaker": {
-          "$ref": "#/definitions/models.CircuitBreakerConfig"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
-        },
-        "endpoints": {
-          "items": {
-            "$ref": "#/definitions/models.EndpointConfig"
-          },
-          "type": "array"
-        },
-        "health_check": {
-          "$ref": "#/definitions/models.HealthCheckConfig"
-        },
-        "id": {
-          "type": "string"
-        },
-        "load_balancer": {
-          "$ref": "#/definitions/models.LoadBalancerConfig"
-        },
-        "name": {
-          "type": "string"
-        },
-        "retry_policy": {
-          "$ref": "#/definitions/models.RetryPolicyConfig"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "models.CircuitBreakerConfig": {
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "failure_ratio": {
-          "type": "number"
-        },
-        "interval": {
-          "type": "integer"
-        },
-        "max_requests": {
-          "type": "integer"
-        },
-        "minimum_requests": {
-          "type": "integer"
-        },
-        "timeout": {
-          "type": "integer"
-        }
-      },
       "type": "object"
     },
     "models.DtakoEvent": {
@@ -554,43 +1018,6 @@
       },
       "type": "object"
     },
-    "models.EndpointConfig": {
-      "properties": {
-        "healthy": {
-          "type": "boolean"
-        },
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "url": {
-          "type": "string"
-        },
-        "weight": {
-          "type": "integer"
-        }
-      },
-      "type": "object"
-    },
-    "models.EndpointHealthStatus": {
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "response_time_ms": {
-          "type": "integer"
-        },
-        "status": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "models.ErrorResponse": {
       "properties": {
         "code": {
@@ -599,52 +1026,6 @@
         },
         "message": {
           "example": "Invalid request parameters",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "models.HealthCheckConfig": {
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "expected_status": {
-          "items": {
-            "type": "integer"
-          },
-          "type": "array"
-        },
-        "healthy_threshold": {
-          "type": "integer"
-        },
-        "interval": {
-          "type": "integer"
-        },
-        "path": {
-          "type": "string"
-        },
-        "timeout": {
-          "type": "integer"
-        },
-        "unhealthy_threshold": {
-          "type": "integer"
-        }
-      },
-      "type": "object"
-    },
-    "models.HealthResponse": {
-      "properties": {
-        "services": {
-          "additionalProperties": {
-            "$ref": "#/definitions/models.ServiceHealthInfo"
-          },
-          "type": "object"
-        },
-        "status": {
-          "type": "string"
-        },
-        "timestamp": {
           "type": "string"
         }
       },
@@ -699,155 +1080,15 @@
         }
       },
       "type": "object"
-    },
-    "models.LoadBalancerConfig": {
-      "properties": {
-        "algorithm": {
-          "type": "string"
-        },
-        "sticky_session": {
-          "type": "boolean"
-        }
-      },
-      "type": "object"
-    },
-    "models.RateLimitConfig": {
-      "properties": {
-        "burst_size": {
-          "type": "integer"
-        },
-        "enabled": {
-          "type": "boolean"
-        },
-        "key_type": {
-          "type": "string"
-        },
-        "period": {
-          "type": "string"
-        },
-        "rate": {
-          "type": "integer"
-        },
-        "white_list": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
-      "type": "object"
-    },
-    "models.RetryPolicyConfig": {
-      "properties": {
-        "backoff": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
-        },
-        "initial_interval": {
-          "type": "integer"
-        },
-        "max_attempts": {
-          "type": "integer"
-        },
-        "max_interval": {
-          "type": "integer"
-        }
-      },
-      "type": "object"
-    },
-    "models.RouteConfig": {
-      "properties": {
-        "auth": {
-          "$ref": "#/definitions/models.AuthConfig"
-        },
-        "backend": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
-        },
-        "id": {
-          "type": "string"
-        },
-        "method": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "middleware": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "path": {
-          "type": "string"
-        },
-        "priority": {
-          "type": "integer"
-        },
-        "rate_limit": {
-          "$ref": "#/definitions/models.RateLimitConfig"
-        },
-        "timeout": {
-          "example": 30000000000,
-          "type": "integer"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "models.ServiceHealthInfo": {
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "models.ServiceHealthStatus": {
-      "properties": {
-        "endpoint_statuses": {
-          "additionalProperties": {
-            "$ref": "#/definitions/models.EndpointHealthStatus"
-          },
-          "type": "object"
-        },
-        "last_checked": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
-        },
-        "service_id": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        }
-      },
-      "type": "object"
     }
   },
-  "host": "localhost:8080",
   "info": {
     "contact": {
       "email": "support@swagger.io",
       "name": "API Support",
       "url": "http://www.swagger.io/support"
     },
-    "description": "高性能なリクエストルーティングシステム (DTako Module 1.4.0, ETC Meisai Module 0.0.16)",
+    "description": "高性能なリクエストルーティングシステム (DTako Module v1.4.0, ETC Meisai Module v0.0.16)",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -856,25 +1097,24 @@
     "title": "Ryohi Router API",
     "version": "1.0.0"
   },
+  "openapi": "3.0.3",
   "paths": {
     "/admin/backends": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Get a list of all configured backend services",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "items": {
-                "$ref": "#/definitions/models.BackendService"
-              },
-              "type": "array"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/models.BackendService"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
           }
         },
         "security": [
@@ -888,36 +1128,38 @@
         ]
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Add a new backend service configuration",
-        "parameters": [
-          {
-            "description": "Backend configuration",
-            "in": "body",
-            "name": "backend",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.BackendService"
-            }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/models.BackendService"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.BackendService"
+              }
             }
           },
+          "description": "Backend configuration",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.BackendService"
+                }
+              }
+            },
+            "description": "Created"
+          },
           "400": {
-            "description": "Invalid request body",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
           }
         },
         "security": [
@@ -933,9 +1175,6 @@
     },
     "/admin/backends/{id}/health": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Get health status of a specific backend service",
         "parameters": [
           {
@@ -946,21 +1185,26 @@
             "type": "string"
           }
         ],
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/models.ServiceHealthStatus"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.ServiceHealthStatus"
+                }
+              }
+            },
+            "description": "OK"
           },
           "404": {
-            "description": "Backend not found",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Backend not found"
           }
         },
         "security": [
@@ -976,28 +1220,30 @@
     },
     "/admin/reload": {
       "post": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Reload the router configuration from file",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "additionalProperties": {
-                "type": "string"
-              },
-              "type": "object"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
           },
           "500": {
-            "description": "Failed to reload configuration",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Failed to reload configuration"
           }
         },
         "security": [
@@ -1013,22 +1259,20 @@
     },
     "/admin/routes": {
       "get": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Get a list of all configured routes",
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "items": {
-                "$ref": "#/definitions/models.RouteConfig"
-              },
-              "type": "array"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/models.RouteConfig"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
           }
         },
         "security": [
@@ -1042,36 +1286,38 @@
         ]
       },
       "post": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Add a new route configuration",
-        "parameters": [
-          {
-            "description": "Route configuration",
-            "in": "body",
-            "name": "route",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.RouteConfig"
-            }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/models.RouteConfig"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.RouteConfig"
+              }
             }
           },
+          "description": "Route configuration",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.RouteConfig"
+                }
+              }
+            },
+            "description": "Created"
+          },
           "400": {
-            "description": "Invalid request body",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
           }
         },
         "security": [
@@ -1087,9 +1333,6 @@
     },
     "/admin/routes/{id}": {
       "delete": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Remove a route configuration",
         "parameters": [
           {
@@ -1100,21 +1343,26 @@
             "type": "string"
           }
         ],
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "204": {
-            "description": "No content",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "No content"
           },
           "404": {
-            "description": "Route not found",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
           }
         },
         "security": [
@@ -1128,9 +1376,6 @@
         ]
       },
       "get": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Get details of a specific route",
         "parameters": [
           {
@@ -1141,21 +1386,26 @@
             "type": "string"
           }
         ],
-        "produces": [
-          "application/json"
-        ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/models.RouteConfig"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.RouteConfig"
+                }
+              }
+            },
+            "description": "OK"
           },
           "404": {
-            "description": "Route not found",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
           }
         },
         "security": [
@@ -1169,9 +1419,6 @@
         ]
       },
       "put": {
-        "consumes": [
-          "application/json"
-        ],
         "description": "Update an existing route configuration",
         "parameters": [
           {
@@ -1180,38 +1427,49 @@
             "name": "id",
             "required": true,
             "type": "string"
-          },
-          {
-            "description": "Updated route configuration",
-            "in": "body",
-            "name": "route",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.RouteConfig"
-            }
           }
         ],
-        "produces": [
-          "application/json"
-        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/models.RouteConfig"
+              }
+            }
+          },
+          "description": "Updated route configuration",
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/models.RouteConfig"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/models.RouteConfig"
+                }
+              }
+            },
+            "description": "OK"
           },
           "400": {
-            "description": "Invalid request body",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Invalid request body"
           },
           "404": {
-            "description": "Route not found",
-            "schema": {
-              "type": "string"
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Route not found"
           }
         },
         "security": [
@@ -1344,7 +1602,7 @@
                 }
               },
               "schema": {
-                "$ref": "#/definitions/DownloadRequest"
+                "$ref": "#/components/schemas/DownloadRequest"
               }
             }
           },
@@ -1374,7 +1632,7 @@
                   "total_records": 212
                 },
                 "schema": {
-                  "$ref": "#/definitions/DownloadResponse"
+                  "$ref": "#/components/schemas/DownloadResponse"
                 }
               }
             },
@@ -1418,7 +1676,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/definitions/DownloadRequest"
+                "$ref": "#/components/schemas/DownloadRequest"
               }
             }
           },
@@ -1484,7 +1742,7 @@
                 }
               },
               "schema": {
-                "$ref": "#/definitions/SingleDownloadRequest"
+                "$ref": "#/components/schemas/SingleDownloadRequest"
               }
             }
           },
@@ -1510,7 +1768,7 @@
                   "user_id": "ohishiexp"
                 },
                 "schema": {
-                  "$ref": "#/definitions/DownloadResult"
+                  "$ref": "#/components/schemas/DownloadResult"
                 }
               }
             },
@@ -1689,7 +1947,7 @@
                     },
                     "records": {
                       "items": {
-                        "$ref": "#/definitions/ETCMeisai"
+                        "$ref": "#/components/schemas/ETCMeisai"
                       },
                       "type": "array"
                     }
@@ -2196,12 +2454,9 @@
       }
     }
   },
-  "securityDefinitions": {
-    "ApiKeyAuth": {
-      "in": "header",
-      "name": "Authorization",
-      "type": "apiKey"
+  "servers": [
+    {
+      "url": "http://localhost:8080/"
     }
-  },
-  "swagger": "2.0"
+  ]
 }

@@ -61,8 +61,8 @@ func (m *SwaggerMerger) SetModuleURLs(urls map[string]string) {
 func (m *SwaggerMerger) MergeOnStartup() error {
 	m.logger.Info("Starting module Swagger integration...")
 
-	// メインのSwaggerファイルを読み込み
-	mainSwaggerPath := filepath.Join(m.docsPath, "swagger.json")
+	// メインのOpenAPIファイルを読み込み
+	mainSwaggerPath := filepath.Join(m.docsPath, "openapi.json")
 	mainBytes, err := ioutil.ReadFile(mainSwaggerPath)
 	if err != nil {
 		return fmt.Errorf("failed to read main swagger: %w", err)
@@ -129,22 +129,19 @@ func (m *SwaggerMerger) MergeOnStartup() error {
 	return nil
 }
 
-// convertOpenAPIRefs OpenAPI 3.0の参照をSwagger 2.0形式に変換
+// convertOpenAPIRefs は不要になったが、互換性のため残す
 func (m *SwaggerMerger) convertOpenAPIRefs(data interface{}) interface{} {
+	// OpenAPI 3.0をネイティブサポートするため、変換不要
+	return data
+}
+
+// 互換性のための仮実装
+func (m *SwaggerMerger) convertOpenAPIRefsOld(data interface{}) interface{} {
 	switch v := data.(type) {
 	case map[string]interface{}:
 		result := make(map[string]interface{})
 		for key, value := range v {
-			if key == "$ref" {
-				if strVal, ok := value.(string); ok {
-					// #/components/schemas/ を #/definitions/ に変換
-					result[key] = strings.ReplaceAll(strVal, "#/components/schemas/", "#/definitions/")
-				} else {
-					result[key] = value
-				}
-			} else {
-				result[key] = m.convertOpenAPIRefs(value)
-			}
+			result[key] = value
 		}
 		return result
 	case []interface{}:
