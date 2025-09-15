@@ -14,6 +14,7 @@ import (
 	"github.com/your-org/ryohi-router/src/lib/config"
 	"github.com/your-org/ryohi-router/src/lib/middleware"
 	"github.com/your-org/ryohi-router/src/services/dtako"
+	"github.com/your-org/ryohi-router/src/services/etc_meisai"
 	"github.com/your-org/ryohi-router/src/services/health"
 	"github.com/your-org/ryohi-router/src/services/router"
 )
@@ -25,10 +26,11 @@ type Server struct {
 	mainServer    *http.Server
 	adminServer   *http.Server
 	metricsServer *http.Server
-	router        *router.Router
-	healthChecker *health.Checker
-	dtakoService  *dtako.DtakoService
-	wg            sync.WaitGroup
+	router           *router.Router
+	healthChecker    *health.Checker
+	dtakoService     *dtako.DtakoService
+	etcMeisaiService *etc_meisai.EtcMeisaiService
+	wg               sync.WaitGroup
 }
 
 // New creates a new server instance
@@ -50,6 +52,9 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	
 	// Initialize DTako service (enabled by default)
 	s.dtakoService = dtako.NewDtakoService(true)
+
+	// Initialize ETC Meisai service (enabled by default)
+	s.etcMeisaiService = etc_meisai.NewEtcMeisaiService(true)
 
 	// Setup main server
 	mainRouter := s.setupMainRouter()
@@ -106,6 +111,9 @@ func (s *Server) setupMainRouter() http.Handler {
 
 	// Register DTako routes
 	s.dtakoService.RegisterRoutes(r)
+
+	// Register ETC Meisai routes
+	s.etcMeisaiService.RegisterRoutes(r)
 
 	// Setup route handlers
 	for _, route := range s.config.Routes {

@@ -1,319 +1,385 @@
 {
-  "components": {
-    "schemas": {
-      "github_com_your-org_ryohi-router_src_models.AuthConfig": {
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "roles": {
-            "items": {
-              "type": "string"
+  "basePath": "/",
+  "definitions": {
+    "DownloadRequest": {
+      "properties": {
+        "accounts": {
+          "description": "アカウント情報の配列。\n省略した場合は環境変数 `ETC_CORP_ACCOUNTS` から自動的に読み込まれます。\n\n環境変数の形式: `ohishiexp:pass1,ohishiexp1:pass2`\n",
+          "items": {
+            "properties": {
+              "password": {
+                "description": "ETCサイトのパスワード",
+                "example": "password123",
+                "type": "string"
+              },
+              "user_id": {
+                "description": "ETCサイトのユーザーID",
+                "example": "ohishiexp",
+                "type": "string"
+              }
             },
-            "type": "array"
-          },
-          "type": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.BackendService": {
-        "properties": {
-          "circuit_breaker": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig"
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "endpoints": {
-            "items": {
-              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.EndpointConfig"
-            },
-            "type": "array"
-          },
-          "health_check": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthCheckConfig"
-          },
-          "id": {
-            "type": "string"
-          },
-          "load_balancer": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.LoadBalancerConfig"
-          },
-          "name": {
-            "type": "string"
-          },
-          "retry_policy": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RetryPolicyConfig"
-          },
-          "updated_at": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig": {
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "failure_ratio": {
-            "type": "number"
-          },
-          "interval": {
-            "type": "integer"
-          },
-          "max_requests": {
-            "type": "integer"
-          },
-          "minimum_requests": {
-            "type": "integer"
-          },
-          "timeout": {
-            "type": "integer"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.EndpointConfig": {
-        "properties": {
-          "healthy": {
-            "type": "boolean"
-          },
-          "metadata": {
-            "additionalProperties": {
-              "type": "string"
-            },
+            "required": [
+              "user_id",
+              "password"
+            ],
             "type": "object"
           },
-          "url": {
-            "type": "string"
-          },
-          "weight": {
-            "type": "integer"
-          }
+          "type": "array"
         },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.EndpointHealthStatus": {
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "response_time_ms": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.HealthCheckConfig": {
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "expected_status": {
-            "items": {
+        "config": {
+          "description": "スクレイピング処理の詳細設定（省略可能）",
+          "properties": {
+            "download_path": {
+              "default": "./downloads",
+              "description": "CSVファイルのダウンロード先ディレクトリ",
+              "example": "./custom_downloads",
+              "type": "string"
+            },
+            "headless": {
+              "default": true,
+              "description": "ブラウザを非表示モードで実行するか",
+              "type": "boolean"
+            },
+            "retry_count": {
+              "default": 3,
+              "description": "エラー時のリトライ回数",
+              "example": 5,
               "type": "integer"
             },
-            "type": "array"
+            "timeout": {
+              "default": 30000,
+              "description": "タイムアウト時間（ミリ秒）",
+              "example": 60000,
+              "type": "integer"
+            }
           },
-          "healthy_threshold": {
-            "type": "integer"
-          },
-          "interval": {
-            "type": "integer"
-          },
-          "path": {
-            "type": "string"
-          },
-          "timeout": {
-            "type": "integer"
-          },
-          "unhealthy_threshold": {
-            "type": "integer"
-          }
+          "type": "object"
         },
-        "type": "object"
+        "from_date": {
+          "description": "明細取得開始日（YYYY-MM-DD形式）",
+          "example": "2025-08-01",
+          "format": "date",
+          "type": "string"
+        },
+        "to_date": {
+          "description": "明細取得終了日（YYYY-MM-DD形式）",
+          "example": "2025-09-15",
+          "format": "date",
+          "type": "string"
+        }
       },
-      "github_com_your-org_ryohi-router_src_models.HealthResponse": {
-        "properties": {
-          "services": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.ServiceHealthInfo"
-            },
-            "type": "object"
-          },
-          "status": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.LoadBalancerConfig": {
-        "properties": {
-          "algorithm": {
-            "type": "string"
-          },
-          "sticky_session": {
-            "type": "boolean"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.RateLimitConfig": {
-        "properties": {
-          "burst_size": {
-            "type": "integer"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "key_type": {
-            "type": "string"
-          },
-          "period": {
-            "type": "string"
-          },
-          "rate": {
-            "type": "integer"
-          },
-          "white_list": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.RetryPolicyConfig": {
-        "properties": {
-          "backoff": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "initial_interval": {
-            "type": "integer"
-          },
-          "max_attempts": {
-            "type": "integer"
-          },
-          "max_interval": {
-            "type": "integer"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.RouteConfig": {
-        "properties": {
-          "auth": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.AuthConfig"
-          },
-          "backend": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "id": {
-            "type": "string"
-          },
-          "method": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "middleware": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "path": {
-            "type": "string"
-          },
-          "priority": {
-            "type": "integer"
-          },
-          "rate_limit": {
-            "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RateLimitConfig"
-          },
-          "timeout": {
-            "example": 30000000000,
-            "type": "integer"
-          },
-          "updated_at": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.ServiceHealthInfo": {
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "github_com_your-org_ryohi-router_src_models.ServiceHealthStatus": {
-        "properties": {
-          "endpoint_statuses": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.EndpointHealthStatus"
-            },
-            "type": "object"
-          },
-          "last_checked": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "service_id": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      }
+      "required": [
+        "from_date",
+        "to_date"
+      ],
+      "type": "object"
     },
-    "securitySchemes": {
-      "ApiKeyAuth": {
-        "in": "header",
-        "name": "Authorization",
-        "type": "apiKey"
-      }
-    }
-  },
-  "definitions": {
+    "DownloadResponse": {
+      "properties": {
+        "failed_count": {
+          "description": "失敗アカウント数",
+          "type": "integer"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/definitions/DownloadResult"
+          },
+          "type": "array"
+        },
+        "success_count": {
+          "description": "成功アカウント数",
+          "type": "integer"
+        },
+        "total_records": {
+          "description": "総レコード数",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "DownloadResult": {
+      "properties": {
+        "account": {
+          "description": "アカウント名",
+          "type": "string"
+        },
+        "csv_path": {
+          "description": "ダウンロードしたCSVファイルのパス",
+          "type": "string"
+        },
+        "error": {
+          "description": "エラーメッセージ（失敗時）",
+          "type": "string"
+        },
+        "record_count": {
+          "description": "レコード数",
+          "type": "integer"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/definitions/ETCMeisai"
+          },
+          "type": "array"
+        },
+        "success": {
+          "description": "処理成功フラグ",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ETCMeisai": {
+      "properties": {
+        "amount": {
+          "description": "通行料金",
+          "example": 1200,
+          "type": "integer"
+        },
+        "card_number": {
+          "description": "ETCカード番号",
+          "example": "****1234",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "作成日時",
+          "format": "date-time",
+          "type": "string"
+        },
+        "discount_amount": {
+          "description": "割引額",
+          "example": 300,
+          "type": "integer"
+        },
+        "distance": {
+          "description": "走行距離(km)",
+          "example": 35.2,
+          "format": "float",
+          "type": "number"
+        },
+        "entrance_ic": {
+          "description": "IC入口",
+          "example": "東京",
+          "type": "string"
+        },
+        "exit_ic": {
+          "description": "IC出口",
+          "example": "横浜",
+          "type": "string"
+        },
+        "id": {
+          "description": "明細ID",
+          "type": "integer"
+        },
+        "note": {
+          "description": "備考",
+          "type": "string"
+        },
+        "total_amount": {
+          "description": "請求額",
+          "example": 900,
+          "type": "integer"
+        },
+        "unko_no": {
+          "description": "運行番号",
+          "example": "UN20250915001",
+          "type": "string"
+        },
+        "usage_date": {
+          "description": "利用年月日",
+          "example": "2025-09-15",
+          "type": "string"
+        },
+        "usage_time": {
+          "description": "利用時刻",
+          "example": "14:30",
+          "type": "string"
+        },
+        "vehicle_number": {
+          "description": "車両番号",
+          "example": "品川500あ1234",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "SingleDownloadRequest": {
+      "properties": {
+        "from_date": {
+          "format": "date",
+          "type": "string"
+        },
+        "password": {
+          "description": "パスワード",
+          "type": "string"
+        },
+        "to_date": {
+          "format": "date",
+          "type": "string"
+        },
+        "user_id": {
+          "description": "ETCサイトのユーザーID。\n異なるアカウントタイプ（ohishiexp, ohishiexp1）で\nページ構造が異なるため、正しいユーザーIDを指定してください。\n",
+          "type": "string"
+        }
+      },
+      "required": [
+        "user_id",
+        "password",
+        "from_date",
+        "to_date"
+      ],
+      "type": "object"
+    },
+    "SummaryResponse": {
+      "properties": {
+        "card_summary": {
+          "items": {
+            "properties": {
+              "amount": {
+                "type": "integer"
+              },
+              "card_number": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "daily_summary": {
+          "items": {
+            "properties": {
+              "amount": {
+                "type": "integer"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "date": {
+                "format": "date",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "period": {
+          "properties": {
+            "from": {
+              "format": "date",
+              "type": "string"
+            },
+            "to": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "record_count": {
+          "description": "レコード件数",
+          "type": "integer"
+        },
+        "total_amount": {
+          "description": "総額",
+          "type": "integer"
+        },
+        "total_discount": {
+          "description": "総割引額",
+          "type": "integer"
+        },
+        "total_distance": {
+          "description": "総走行距離",
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "models.AuthConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.BackendService": {
+      "properties": {
+        "circuit_breaker": {
+          "$ref": "#/definitions/models.CircuitBreakerConfig"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "endpoints": {
+          "items": {
+            "$ref": "#/definitions/models.EndpointConfig"
+          },
+          "type": "array"
+        },
+        "health_check": {
+          "$ref": "#/definitions/models.HealthCheckConfig"
+        },
+        "id": {
+          "type": "string"
+        },
+        "load_balancer": {
+          "$ref": "#/definitions/models.LoadBalancerConfig"
+        },
+        "name": {
+          "type": "string"
+        },
+        "retry_policy": {
+          "$ref": "#/definitions/models.RetryPolicyConfig"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.CircuitBreakerConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "failure_ratio": {
+          "type": "number"
+        },
+        "interval": {
+          "type": "integer"
+        },
+        "max_requests": {
+          "type": "integer"
+        },
+        "minimum_requests": {
+          "type": "integer"
+        },
+        "timeout": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
     "models.DtakoEvent": {
       "properties": {
         "created_at": {
@@ -558,6 +624,43 @@
       },
       "type": "object"
     },
+    "models.EndpointConfig": {
+      "properties": {
+        "healthy": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "url": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.EndpointHealthStatus": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "response_time_ms": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "models.ErrorResponse": {
       "properties": {
         "code": {
@@ -566,6 +669,52 @@
         },
         "message": {
           "example": "Invalid request parameters",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.HealthCheckConfig": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "expected_status": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "healthy_threshold": {
+          "type": "integer"
+        },
+        "interval": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "timeout": {
+          "type": "integer"
+        },
+        "unhealthy_threshold": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.HealthResponse": {
+      "properties": {
+        "services": {
+          "additionalProperties": {
+            "$ref": "#/definitions/models.ServiceHealthInfo"
+          },
+          "type": "object"
+        },
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
           "type": "string"
         }
       },
@@ -620,15 +769,155 @@
         }
       },
       "type": "object"
+    },
+    "models.LoadBalancerConfig": {
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "sticky_session": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "models.RateLimitConfig": {
+      "properties": {
+        "burst_size": {
+          "type": "integer"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "key_type": {
+          "type": "string"
+        },
+        "period": {
+          "type": "string"
+        },
+        "rate": {
+          "type": "integer"
+        },
+        "white_list": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "models.RetryPolicyConfig": {
+      "properties": {
+        "backoff": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "initial_interval": {
+          "type": "integer"
+        },
+        "max_attempts": {
+          "type": "integer"
+        },
+        "max_interval": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "models.RouteConfig": {
+      "properties": {
+        "auth": {
+          "$ref": "#/definitions/models.AuthConfig"
+        },
+        "backend": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "method": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "middleware": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "path": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "rate_limit": {
+          "$ref": "#/definitions/models.RateLimitConfig"
+        },
+        "timeout": {
+          "example": 30000000000,
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ServiceHealthInfo": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "models.ServiceHealthStatus": {
+      "properties": {
+        "endpoint_statuses": {
+          "additionalProperties": {
+            "$ref": "#/definitions/models.EndpointHealthStatus"
+          },
+          "type": "object"
+        },
+        "last_checked": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "service_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
     }
   },
+  "host": "localhost:8080",
   "info": {
     "contact": {
       "email": "support@swagger.io",
       "name": "API Support",
       "url": "http://www.swagger.io/support"
     },
-    "description": "高性能なリクエストルーティングシステム (DTako Module 1.3.4)",
+    "description": "高性能なリクエストルーティングシステム (DTako Module 1.4.0, ETC Meisai Module 0.0.7)",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -637,24 +926,25 @@
     "title": "Ryohi Router API",
     "version": "1.0.0"
   },
-  "openapi": "3.0.0",
   "paths": {
     "/admin/backends": {
       "get": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Get a list of all configured backend services",
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.BackendService"
+              },
+              "type": "array"
+            }
           }
         },
         "security": [
@@ -668,6 +958,9 @@
         ]
       },
       "post": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Add a new backend service configuration",
         "parameters": [
           {
@@ -676,41 +969,25 @@
             "name": "backend",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
+              "$ref": "#/definitions/models.BackendService"
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
-              }
-            }
-          },
-          "description": "Backend configuration",
-          "required": true
-        },
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.BackendService"
-                }
-              }
-            },
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/models.BackendService"
+            }
           },
           "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -726,6 +1003,9 @@
     },
     "/admin/backends/{id}/health": {
       "get": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Get health status of a specific backend service",
         "parameters": [
           {
@@ -736,26 +1016,21 @@
             "type": "string"
           }
         ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.ServiceHealthStatus"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.ServiceHealthStatus"
+            }
           },
           "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Backend not found"
+            "description": "Backend not found",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -771,30 +1046,28 @@
     },
     "/admin/reload": {
       "post": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Reload the router configuration from file",
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            }
           },
           "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Failed to reload configuration"
+            "description": "Failed to reload configuration",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -810,20 +1083,22 @@
     },
     "/admin/routes": {
       "get": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Get a list of all configured routes",
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/models.RouteConfig"
+              },
+              "type": "array"
+            }
           }
         },
         "security": [
@@ -837,6 +1112,9 @@
         ]
       },
       "post": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Add a new route configuration",
         "parameters": [
           {
@@ -845,41 +1123,25 @@
             "name": "route",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
+              "$ref": "#/definitions/models.RouteConfig"
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-              }
-            }
-          },
-          "description": "Route configuration",
-          "required": true
-        },
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-                }
-              }
-            },
-            "description": "Created"
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
           },
           "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -895,6 +1157,9 @@
     },
     "/admin/routes/{id}": {
       "delete": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Remove a route configuration",
         "parameters": [
           {
@@ -905,26 +1170,21 @@
             "type": "string"
           }
         ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "204": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "No content"
+            "description": "No content",
+            "schema": {
+              "type": "string"
+            }
           },
           "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Route not found"
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -938,6 +1198,9 @@
         ]
       },
       "get": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Get details of a specific route",
         "parameters": [
           {
@@ -948,26 +1211,21 @@
             "type": "string"
           }
         ],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
           },
           "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Route not found"
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -981,6 +1239,9 @@
         ]
       },
       "put": {
+        "consumes": [
+          "application/json"
+        ],
         "description": "Update an existing route configuration",
         "parameters": [
           {
@@ -989,49 +1250,38 @@
             "name": "id",
             "required": true,
             "type": "string"
+          },
+          {
+            "description": "Updated route configuration",
+            "in": "body",
+            "name": "route",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-              }
-            }
-          },
-          "description": "Updated route configuration",
-          "required": true
-        },
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.RouteConfig"
-                }
-              }
-            },
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.RouteConfig"
+            }
           },
           "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "schema": {
+              "type": "string"
+            }
           },
           "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Route not found"
+            "description": "Route not found",
+            "schema": {
+              "type": "string"
+            }
           }
         },
         "security": [
@@ -1042,6 +1292,751 @@
         "summary": "Update a route",
         "tags": [
           "admin"
+        ]
+      }
+    },
+    "/api/etc/accounts": {
+      "get": {
+        "description": "環境変数 `ETC_CORP_ACCOUNTS` に設定されているアカウント名の一覧を取得します。\nセキュリティのため、パスワードは表示されません。\n\nこのエンドポイントは、APIを使用する前に利用可能なアカウントを確認するために使用できます。\n",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "with_accounts": {
+                    "summary": "アカウントが設定されている場合",
+                    "value": {
+                      "accounts": [
+                        "ohishiexp",
+                        "ohishiexp1",
+                        "ohishiexp2"
+                      ],
+                      "configured": true,
+                      "count": 3,
+                      "message": "環境変数 ETC_CORP_ACCOUNTS から読み込み"
+                    }
+                  },
+                  "without_accounts": {
+                    "summary": "アカウントが未設定の場合",
+                    "value": {
+                      "accounts": [],
+                      "configured": false,
+                      "count": 0,
+                      "message": "環境変数 ETC_CORP_ACCOUNTS が設定されていません"
+                    }
+                  }
+                },
+                "schema": {
+                  "properties": {
+                    "accounts": {
+                      "description": "利用可能なアカウントID一覧",
+                      "example": [
+                        "ohishiexp",
+                        "ohishiexp1"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "configured": {
+                      "description": "アカウントが設定されているか",
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "count": {
+                      "description": "アカウント数",
+                      "example": 2,
+                      "type": "integer"
+                    },
+                    "message": {
+                      "description": "ステータスメッセージ",
+                      "example": "環境変数 ETC_CORP_ACCOUNTS から読み込み",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "アカウント一覧取得成功"
+          }
+        },
+        "summary": "利用可能なアカウント一覧取得",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/api/etc/download": {
+      "post": {
+        "description": "指定した期間のETC明細を複数アカウントから一括ダウンロード。\n\n## アカウント設定方法\n\n### 1. リクエストボディで指定する場合\n```json\n{\n  \"accounts\": [\n    {\"user_id\": \"ohishiexp\", \"password\": \"pass1\"},\n    {\"user_id\": \"ohishiexp1\", \"password\": \"pass2\"}\n  ],\n  \"from_date\": \"2025-08-01\",\n  \"to_date\": \"2025-09-15\"\n}\n```\n\n### 2. 環境変数を使用する場合\naccountsパラメータを省略すると、環境変数 `ETC_CORP_ACCOUNTS` から自動的に読み込まれます。\n```\nETC_CORP_ACCOUNTS=ohishiexp:pass1,ohishiexp1:pass2\n```\n\n**利用可能なアカウントを確認するには:**\n```\nGET /api/etc/accounts\n```\n\n### 3. カスタム設定を使用する場合\nconfigパラメータで、ダウンロード処理の詳細な設定が可能です。\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "with_accounts": {
+                  "summary": "アカウント指定あり",
+                  "value": {
+                    "accounts": [
+                      {
+                        "password": "password123",
+                        "user_id": "ohishiexp"
+                      },
+                      {
+                        "password": "password456",
+                        "user_id": "ohishiexp1"
+                      }
+                    ],
+                    "from_date": "2025-08-01",
+                    "to_date": "2025-09-15"
+                  }
+                },
+                "with_config": {
+                  "summary": "カスタム設定付き",
+                  "value": {
+                    "config": {
+                      "download_path": "./custom_downloads",
+                      "headless": false,
+                      "retry_count": 5,
+                      "timeout": 60000
+                    },
+                    "from_date": "2025-08-01",
+                    "to_date": "2025-09-15"
+                  }
+                },
+                "without_accounts": {
+                  "summary": "環境変数使用（accountsパラメータ省略）",
+                  "value": {
+                    "from_date": "2025-08-01",
+                    "to_date": "2025-09-15"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/definitions/DownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "failed_count": 0,
+                  "results": [
+                    {
+                      "csv_path": "./downloads/ETC_20250815_ohishiexp.csv",
+                      "record_count": 125,
+                      "success": true,
+                      "user_id": "ohishiexp"
+                    },
+                    {
+                      "csv_path": "./downloads/ETC_20250815_ohishiexp1.csv",
+                      "record_count": 87,
+                      "success": true,
+                      "user_id": "ohishiexp1"
+                    }
+                  ],
+                  "success_count": 2,
+                  "total_records": 212
+                },
+                "schema": {
+                  "$ref": "#/definitions/DownloadResponse"
+                }
+              }
+            },
+            "description": "ダウンロード成功"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid from_date format"
+                },
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "リクエストエラー"
+          },
+          "401": {
+            "description": "認証エラー"
+          },
+          "500": {
+            "description": "サーバーエラー"
+          }
+        },
+        "summary": "ETC明細ダウンロード（複数アカウント対応）",
+        "tags": [
+          "Download"
+        ]
+      }
+    },
+    "/api/etc/download-async": {
+      "post": {
+        "description": "非同期でETC明細をダウンロードし、ジョブIDを返します。\nジョブIDを使って進捗を確認できます。\n\n**使用方法:**\n1. このエンドポイントでジョブを開始\n2. 返されたjob_idで `/api/etc/download-status/{job_id}` をポーリング\n3. statusが\"completed\"になったら結果を取得\n\n**進捗確認の例:**\n```javascript\n// ジョブ開始\nconst response = await fetch('/api/etc/download-async', {\n  method: 'POST',\n  headers: {'Content-Type': 'application/json'},\n  body: JSON.stringify({\n    from_date: '2025-08-01',\n    to_date: '2025-09-15'\n  })\n});\nconst {job_id} = await response.json();\n\n// 進捗確認（1秒おきにポーリング）\nconst checkProgress = setInterval(async () =\u003e {\n  const status = await fetch(`/api/etc/download-status/${job_id}`);\n  const job = await status.json();\n  console.log(`進捗: ${job.progress}% - ${job.message}`);\n\n  if (job.status === 'completed') {\n    clearInterval(checkProgress);\n    console.log('完了:', job.result);\n  }\n}, 1000);\n```\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/DownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "job_id": {
+                      "description": "ジョブID",
+                      "example": "550e8400-e29b-41d4-a716-446655440000",
+                      "type": "string"
+                    },
+                    "status_url": {
+                      "description": "ステータス確認URL",
+                      "example": "/api/etc/download-status/550e8400-e29b-41d4-a716-446655440000",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "ジョブ開始成功"
+          },
+          "400": {
+            "description": "リクエストエラー"
+          }
+        },
+        "summary": "ETC明細ダウンロード（非同期・進捗確認可能）",
+        "tags": [
+          "Download"
+        ]
+      }
+    },
+    "/api/etc/download-single": {
+      "post": {
+        "description": "単一アカウントの明細をダウンロード。\n\n## アカウント設定方法\n\nリクエストボディで直接アカウント情報を指定します。\nこのエンドポイントは環境変数を使用せず、必ずリクエストボディでアカウント情報を指定する必要があります。\n\n### 使用例\n```json\n{\n  \"user_id\": \"ohishiexp\",\n  \"password\": \"password123\",\n  \"from_date\": \"2025-08-01\",\n  \"to_date\": \"2025-09-15\"\n}\n```\n\n### 注意事項\n- `user_id` と `password` は必須パラメータです\n- このエンドポイントは単一アカウントのみを処理します\n- 複数アカウントを処理する場合は `/api/etc/download` を使用してください\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "ohishiexp1_account": {
+                  "summary": "ohishiexp1 アカウントの例",
+                  "value": {
+                    "from_date": "2025-08-01",
+                    "password": "password456",
+                    "to_date": "2025-09-15",
+                    "user_id": "ohishiexp1"
+                  }
+                },
+                "ohishiexp_account": {
+                  "summary": "ohishiexp アカウントの例",
+                  "value": {
+                    "from_date": "2025-08-01",
+                    "password": "password123",
+                    "to_date": "2025-09-15",
+                    "user_id": "ohishiexp"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/definitions/SingleDownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "csv_path": "./downloads/ETC_20250815_ohishiexp.csv",
+                  "record_count": 125,
+                  "records": [
+                    {
+                      "amount": 1200,
+                      "entrance_ic": "東京",
+                      "exit_ic": "横浜",
+                      "usage_date": "2025-08-15",
+                      "usage_time": "14:30"
+                    }
+                  ],
+                  "success": true,
+                  "user_id": "ohishiexp"
+                },
+                "schema": {
+                  "$ref": "#/definitions/DownloadResult"
+                }
+              }
+            },
+            "description": "ダウンロード成功"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_date": {
+                    "value": {
+                      "error": "Invalid from_date format"
+                    }
+                  },
+                  "missing_user_id": {
+                    "value": {
+                      "error": "user_id is required"
+                    }
+                  }
+                },
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "リクエストエラー"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Login failed: Invalid credentials"
+                },
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "認証エラー"
+          },
+          "500": {
+            "description": "サーバーエラー"
+          }
+        },
+        "summary": "単一アカウントETC明細ダウンロード",
+        "tags": [
+          "Download"
+        ]
+      }
+    },
+    "/api/etc/download-status/{job_id}": {
+      "get": {
+        "description": "ジョブIDを指定してダウンロードの進捗状況を取得します。\n\n**ステータス値:**\n- `pending`: 処理待機中\n- `processing`: 処理中\n- `completed`: 完了\n- `failed`: 失敗\n\n**ポーリング推奨間隔:** 1-2秒\n",
+        "parameters": [
+          {
+            "description": "ジョブID",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "created_at": "2025-09-15T12:00:00Z",
+                  "id": "550e8400-e29b-41d4-a716-446655440000",
+                  "message": "アカウント ohishiexp を処理中... (2/3)",
+                  "progress": 45,
+                  "status": "processing",
+                  "updated_at": "2025-09-15T12:00:30Z"
+                },
+                "schema": {
+                  "properties": {
+                    "created_at": {
+                      "description": "ジョブ作成日時",
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "error": {
+                      "description": "エラーメッセージ（statusがfailedの場合）",
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "ジョブID",
+                      "type": "string"
+                    },
+                    "message": {
+                      "description": "現在の処理内容",
+                      "type": "string"
+                    },
+                    "progress": {
+                      "description": "進捗率（%）",
+                      "maximum": 100,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "result": {
+                      "description": "完了時の結果（statusがcompletedの場合）",
+                      "type": "object"
+                    },
+                    "status": {
+                      "description": "ジョブステータス",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "description": "最終更新日時",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "ジョブステータス取得成功"
+          },
+          "404": {
+            "description": "ジョブが見つからない"
+          }
+        },
+        "summary": "ダウンロードジョブの進捗確認",
+        "tags": [
+          "Download"
+        ]
+      }
+    },
+    "/api/etc/import": {
+      "post": {
+        "description": "ETC明細データをデータベースにインポート",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "records": {
+                    "items": {
+                      "$ref": "#/definitions/ETCMeisai"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "imported": {
+                      "description": "インポート件数",
+                      "type": "integer"
+                    },
+                    "skipped": {
+                      "description": "スキップ件数",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "インポート成功"
+          }
+        },
+        "summary": "データインポート",
+        "tags": [
+          "Import"
+        ]
+      }
+    },
+    "/api/etc/meisai": {
+      "get": {
+        "description": "条件を指定してETC明細を取得",
+        "parameters": [
+          {
+            "description": "開始日 (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from_date",
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "終了日 (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to_date",
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "運行番号",
+            "in": "query",
+            "name": "unko_no",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "カード番号",
+            "in": "query",
+            "name": "card_no",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "取得件数上限",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "オフセット",
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "records": {
+                      "items": {
+                        "$ref": "#/definitions/ETCMeisai"
+                      },
+                      "type": "array"
+                    },
+                    "total": {
+                      "description": "総件数",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "取得成功"
+          }
+        },
+        "summary": "明細一覧取得",
+        "tags": [
+          "Meisai"
+        ]
+      },
+      "post": {
+        "description": "新規ETC明細を作成",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/ETCMeisai"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/ETCMeisai"
+                }
+              }
+            },
+            "description": "作成成功"
+          }
+        },
+        "summary": "明細作成",
+        "tags": [
+          "Meisai"
+        ]
+      }
+    },
+    "/api/etc/meisai/{id}": {
+      "get": {
+        "description": "IDを指定してETC明細を取得",
+        "parameters": [
+          {
+            "description": "明細ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/ETCMeisai"
+                }
+              }
+            },
+            "description": "取得成功"
+          },
+          "404": {
+            "description": "明細が見つからない"
+          }
+        },
+        "summary": "明細詳細取得",
+        "tags": [
+          "Meisai"
+        ]
+      }
+    },
+    "/api/etc/parse-csv": {
+      "post": {
+        "description": "アップロードされたCSVファイルをパース",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "description": "CSVファイル",
+                    "format": "binary",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "records": {
+                      "items": {
+                        "$ref": "#/definitions/ETCMeisai"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "パース成功"
+          }
+        },
+        "summary": "CSVファイルパース",
+        "tags": [
+          "Parse"
+        ]
+      }
+    },
+    "/api/etc/summary": {
+      "get": {
+        "description": "指定期間のETC利用サマリーを取得",
+        "parameters": [
+          {
+            "description": "開始日 (YYYY-MM-DD)",
+            "in": "query",
+            "name": "from_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "終了日 (YYYY-MM-DD)",
+            "in": "query",
+            "name": "to_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "description": "グループ化項目",
+            "in": "query",
+            "name": "group_by",
+            "schema": {
+              "enum": [
+                "day",
+                "month",
+                "card",
+                "vehicle"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/SummaryResponse"
+                }
+              }
+            },
+            "description": "取得成功"
+          }
+        },
+        "summary": "サマリー取得",
+        "tags": [
+          "Summary"
         ]
       }
     },
@@ -1504,45 +2499,42 @@
     },
     "/health": {
       "get": {
-        "description": "Returns the health status of the service and its backends",
+        "description": "APIサーバーの稼働状態を確認",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthResponse"
+                  "properties": {
+                    "status": {
+                      "example": "ok",
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
                 }
               }
             },
-            "description": "OK"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/github_com_your-org_ryohi-router_src_models.HealthResponse"
-                }
-              }
-            },
-            "description": "Service Unavailable"
+            "description": "サーバー正常稼働中"
           }
         },
-        "summary": "Health check endpoint",
+        "summary": "ヘルスチェック",
         "tags": [
-          "health"
+          "System"
         ]
       }
     }
   },
-  "security": [
-    {
-      "ApiKeyAuth": []
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
     }
-  ],
-  "servers": [
-    {
-      "description": "Development server",
-      "url": "http://localhost:8080/"
-    }
-  ]
+  },
+  "swagger": "2.0"
 }

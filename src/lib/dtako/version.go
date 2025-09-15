@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 )
 
 // GetDTakoVersion go.modからDTakoモジュールのバージョンを取得
@@ -36,11 +35,44 @@ func GetDTakoVersion() (string, error) {
 	return "unknown", nil
 }
 
+// GetEtcMeisaiVersion go.modからETC Meisaiモジュールのバージョンを取得
+func GetEtcMeisaiVersion() (string, error) {
+	// プロジェクトルートのgo.modファイルを読み込み
+	goModPath := "go.mod"
+	file, err := os.Open(goModPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open go.mod: %w", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	etcMeisaiRegex := regexp.MustCompile(`github\.com/yhonda-ohishi/etc_meisai\s+v?(.+)`)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if matches := etcMeisaiRegex.FindStringSubmatch(line); len(matches) > 1 {
+			return matches[1], nil
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("error reading go.mod: %w", err)
+	}
+
+	return "unknown", nil
+}
+
 // UpdateSwaggerDescription Swagger定義のdescriptionを動的に更新
 func UpdateSwaggerDescription(docsPath string) error {
-	version, err := GetDTakoVersion()
+	dtakoVersion, err := GetDTakoVersion()
 	if err != nil {
 		return err
+	}
+
+	// ETC Meisaiのバージョンも取得
+	etcMeisaiVersion, err := GetEtcMeisaiVersion()
+	if err != nil {
+		etcMeisaiVersion = "unknown"
 	}
 
 	swaggerPath := filepath.Join(docsPath, "swagger.json")
@@ -51,15 +83,9 @@ func UpdateSwaggerDescription(docsPath string) error {
 
 	content := string(data)
 
-	// descriptionフィールドを更新
-	oldPattern := `"description": "高性能なリクエストルーティングシステム \(DTako Module v[0-9]+\.[0-9]+\.[0-9]+\)"`
-	newDescription := fmt.Sprintf(`"description": "高性能なリクエストルーティングシステム (DTako Module %s)"`, version)
-
-	// 既存のバージョン記載がない場合の処理
-	if !strings.Contains(content, "DTako Module") {
-		oldPattern = `"description": "高性能なリクエストルーティングシステム"`
-		newDescription = fmt.Sprintf(`"description": "高性能なリクエストルーティングシステム (DTako Module %s)"`, version)
-	}
+	// descriptionフィールドを更新（両モジュールのバージョンを含む）
+	oldPattern := `"description": "高性能なリクエストルーティングシステム.*?"`
+	newDescription := fmt.Sprintf(`"description": "高性能なリクエストルーティングシステム (DTako Module %s, ETC Meisai Module %s)"`, dtakoVersion, etcMeisaiVersion)
 
 	re := regexp.MustCompile(oldPattern)
 	content = re.ReplaceAllString(content, newDescription)
@@ -76,13 +102,8 @@ func UpdateSwaggerDescription(docsPath string) error {
 		data, err := os.ReadFile(swaggerYamlPath)
 		if err == nil {
 			content := string(data)
-			oldPattern := `description: 高性能なリクエストルーティングシステム \(DTako Module v[0-9]+\.[0-9]+\.[0-9]+\)`
-			newDescription := fmt.Sprintf(`description: 高性能なリクエストルーティングシステム (DTako Module %s)`, version)
-
-			if !strings.Contains(content, "DTako Module") {
-				oldPattern = `description: 高性能なリクエストルーティングシステム`
-				newDescription = fmt.Sprintf(`description: 高性能なリクエストルーティングシステム (DTako Module %s)`, version)
-			}
+			oldPattern := `description: 高性能なリクエストルーティングシステム.*`
+			newDescription := fmt.Sprintf(`description: 高性能なリクエストルーティングシステム (DTako Module %s, ETC Meisai Module %s)`, dtakoVersion, etcMeisaiVersion)
 
 			re := regexp.MustCompile(oldPattern)
 			content = re.ReplaceAllString(content, newDescription)

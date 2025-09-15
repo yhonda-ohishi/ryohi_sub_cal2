@@ -9,11 +9,13 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 // ModuleConfig 統合するモジュールの設定
 type ModuleConfig struct {
-	Name       string // モジュール名（例: "dtako_events", "dtako_rows"）
+	Name       string // モジュール名（例: "dtako"）
 	SwaggerURL string // SwaggerファイルのGitHub URL
 	PathPrefix string // URLパスのプレフィックス（例: "/dtako_events"）
 }
@@ -25,6 +27,12 @@ var integratedModules = []ModuleConfig{
 		Name:       "dtako",
 		SwaggerURL: "https://raw.githubusercontent.com/yhonda-ohishi/dtako_mod/master/docs/swagger.json",
 		PathPrefix: "/dtako",
+	},
+	// ETC Meisaiモジュールの統合設定
+	{
+		Name:       "etc_meisai",
+		SwaggerURL: "https://raw.githubusercontent.com/yhonda-ohishi/etc_meisai/master/docs/swagger.yaml",
+		PathPrefix: "/etc_meisai",
 	},
 }
 
@@ -121,6 +129,35 @@ func (m *SwaggerMerger) MergeOnStartup() error {
 	return nil
 }
 
+// convertOpenAPIRefs OpenAPI 3.0の参照をSwagger 2.0形式に変換
+func (m *SwaggerMerger) convertOpenAPIRefs(data interface{}) interface{} {
+	switch v := data.(type) {
+	case map[string]interface{}:
+		result := make(map[string]interface{})
+		for key, value := range v {
+			if key == "$ref" {
+				if strVal, ok := value.(string); ok {
+					// #/components/schemas/ を #/definitions/ に変換
+					result[key] = strings.ReplaceAll(strVal, "#/components/schemas/", "#/definitions/")
+				} else {
+					result[key] = value
+				}
+			} else {
+				result[key] = m.convertOpenAPIRefs(value)
+			}
+		}
+		return result
+	case []interface{}:
+		result := make([]interface{}, len(v))
+		for i, item := range v {
+			result[i] = m.convertOpenAPIRefs(item)
+		}
+		return result
+	default:
+		return data
+	}
+}
+
 // fetchModuleSwagger マイクロサービスからSwaggerを取得
 func (m *SwaggerMerger) fetchModuleSwagger(swaggerURL string) (map[string]interface{}, error) {
 	m.logger.Debug("Fetching module swagger", "url", swaggerURL)
@@ -142,9 +179,28 @@ func (m *SwaggerMerger) fetchModuleSwagger(swaggerURL string) (map[string]interf
 	}
 
 	var moduleDoc map[string]interface{}
-	if err := json.Unmarshal(body, &moduleDoc); err != nil {
-		return nil, fmt.Errorf("failed to parse module swagger: %w", err)
+
+	// YAMLファイルの場合はYAMLとしてパース
+	if strings.HasSuffix(swaggerURL, ".yaml") || strings.HasSuffix(swaggerURL, ".yml") {
+		if err := yaml.Unmarshal(body, &moduleDoc); err != nil {
+			return nil, fmt.Errorf("failed to parse module swagger as YAML: %w", err)
+		}
+	} else {
+		// JSONファイルの場合はJSONとしてパース
+		if err := json.Unmarshal(body, &moduleDoc); err != nil {
+			return nil, fmt.Errorf("failed to parse module swagger as JSON: %w", err)
+		}
 	}
+
+	// OpenAPI 3.0の場合、componentsをdefinitionsに変換
+	if components, ok := moduleDoc["components"].(map[string]interface{}); ok {
+		if schemas, ok := components["schemas"].(map[string]interface{}); ok {
+			moduleDoc["definitions"] = schemas
+		}
+	}
+
+	// OpenAPI 3.0の参照を変換
+	moduleDoc = m.convertOpenAPIRefs(moduleDoc).(map[string]interface{})
 
 	return moduleDoc, nil
 }

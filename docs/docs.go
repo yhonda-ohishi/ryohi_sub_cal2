@@ -48,7 +48,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.BackendService"
+                                "$ref": "#/definitions/models.BackendService"
                             }
                         }
                     }
@@ -78,7 +78,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.BackendService"
+                            "$ref": "#/definitions/models.BackendService"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.BackendService"
+                            "$ref": "#/definitions/models.BackendService"
                         }
                     },
                     "400": {
@@ -129,7 +129,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.ServiceHealthStatus"
+                            "$ref": "#/definitions/models.ServiceHealthStatus"
                         }
                     },
                     "404": {
@@ -202,7 +202,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                                "$ref": "#/definitions/models.RouteConfig"
                             }
                         }
                     }
@@ -232,7 +232,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                            "$ref": "#/definitions/models.RouteConfig"
                         }
                     }
                 ],
@@ -240,7 +240,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                            "$ref": "#/definitions/models.RouteConfig"
                         }
                     },
                     "400": {
@@ -283,7 +283,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                            "$ref": "#/definitions/models.RouteConfig"
                         }
                     },
                     "404": {
@@ -325,7 +325,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                            "$ref": "#/definitions/models.RouteConfig"
                         }
                     }
                 ],
@@ -333,7 +333,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RouteConfig"
+                            "$ref": "#/definitions/models.RouteConfig"
                         }
                     },
                     "400": {
@@ -409,13 +409,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.HealthResponse"
+                            "$ref": "#/definitions/models.HealthResponse"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.HealthResponse"
+                            "$ref": "#/definitions/models.HealthResponse"
                         }
                     }
                 }
@@ -423,7 +423,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_your-org_ryohi-router_src_models.AuthConfig": {
+        "models.AuthConfig": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -443,11 +443,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.BackendService": {
+        "models.BackendService": {
             "type": "object",
             "properties": {
                 "circuit_breaker": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig"
+                    "$ref": "#/definitions/models.CircuitBreakerConfig"
                 },
                 "created_at": {
                     "type": "string"
@@ -458,30 +458,30 @@ const docTemplate = `{
                 "endpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.EndpointConfig"
+                        "$ref": "#/definitions/models.EndpointConfig"
                     }
                 },
                 "health_check": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.HealthCheckConfig"
+                    "$ref": "#/definitions/models.HealthCheckConfig"
                 },
                 "id": {
                     "type": "string"
                 },
                 "load_balancer": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.LoadBalancerConfig"
+                    "$ref": "#/definitions/models.LoadBalancerConfig"
                 },
                 "name": {
                     "type": "string"
                 },
                 "retry_policy": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RetryPolicyConfig"
+                    "$ref": "#/definitions/models.RetryPolicyConfig"
                 },
                 "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.CircuitBreakerConfig": {
+        "models.CircuitBreakerConfig": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -504,7 +504,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.EndpointConfig": {
+        "models.EndpointConfig": {
             "type": "object",
             "properties": {
                 "healthy": {
@@ -524,7 +524,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.EndpointHealthStatus": {
+        "models.EndpointHealthStatus": {
             "type": "object",
             "properties": {
                 "message": {
@@ -541,7 +541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.HealthCheckConfig": {
+        "models.HealthCheckConfig": {
             "type": "object",
             "properties": {
                 "enabled": {
@@ -570,13 +570,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.HealthResponse": {
+        "models.HealthResponse": {
             "type": "object",
             "properties": {
                 "services": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.ServiceHealthInfo"
+                        "$ref": "#/definitions/models.ServiceHealthInfo"
                     }
                 },
                 "status": {
@@ -587,7 +587,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.LoadBalancerConfig": {
+        "models.LoadBalancerConfig": {
             "type": "object",
             "properties": {
                 "algorithm": {
@@ -598,7 +598,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.RateLimitConfig": {
+        "models.RateLimitConfig": {
             "type": "object",
             "properties": {
                 "burst_size": {
@@ -624,7 +624,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.RetryPolicyConfig": {
+        "models.RetryPolicyConfig": {
             "type": "object",
             "properties": {
                 "backoff": {
@@ -644,11 +644,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.RouteConfig": {
+        "models.RouteConfig": {
             "type": "object",
             "properties": {
                 "auth": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.AuthConfig"
+                    "$ref": "#/definitions/models.AuthConfig"
                 },
                 "backend": {
                     "type": "string"
@@ -681,7 +681,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "rate_limit": {
-                    "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.RateLimitConfig"
+                    "$ref": "#/definitions/models.RateLimitConfig"
                 },
                 "timeout": {
                     "type": "integer",
@@ -692,7 +692,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.ServiceHealthInfo": {
+        "models.ServiceHealthInfo": {
             "type": "object",
             "properties": {
                 "message": {
@@ -703,13 +703,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_your-org_ryohi-router_src_models.ServiceHealthStatus": {
+        "models.ServiceHealthStatus": {
             "type": "object",
             "properties": {
                 "endpoint_statuses": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/definitions/github_com_your-org_ryohi-router_src_models.EndpointHealthStatus"
+                        "$ref": "#/definitions/models.EndpointHealthStatus"
                     }
                 },
                 "last_checked": {
@@ -743,7 +743,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Ryohi Router API",
-	Description:      "高性能なリクエストルーティングシステム (DTako Module v1.3.3)",
+	Description:      "高性能なリクエストルーティングシステム (DTako Module v1.4.0, ETC Meisai Module v0.0.3)",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

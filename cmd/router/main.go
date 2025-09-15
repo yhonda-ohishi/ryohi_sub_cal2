@@ -12,6 +12,7 @@ import (
 
 	"github.com/your-org/ryohi-router/src/lib/config"
 	"github.com/your-org/ryohi-router/src/lib/dtako"
+	"github.com/your-org/ryohi-router/src/lib/etc_meisai"
 	"github.com/your-org/ryohi-router/src/lib/swagger"
 	"github.com/your-org/ryohi-router/src/server"
 
@@ -20,7 +21,7 @@ import (
 
 // @title           Ryohi Router API
 // @version         1.0.0
-// @description     高性能なリクエストルーティングシステム (DTako Module v1.3.3)
+// @description     高性能なリクエストルーティングシステム (DTako Module v1.4.0, ETC Meisai Module v0.0.3)
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -65,6 +66,14 @@ func main() {
 		dtakoVersion = "unknown"
 	}
 	logger.Info("DTako module version", "version", dtakoVersion)
+
+	// ETC Meisaiモジュールのバージョンを取得
+	etcMeisaiVersion, err := etc_meisai.GetEtcMeisaiVersion()
+	if err != nil {
+		logger.Warn("Failed to get ETC Meisai version", "error", err)
+		etcMeisaiVersion = "unknown"
+	}
+	logger.Info("ETC Meisai module version", "version", etcMeisaiVersion)
 
 	// Integrate DTako Swagger BEFORE importing docs
 	swaggerMerger := swagger.NewSwaggerMerger("docs", logger)
